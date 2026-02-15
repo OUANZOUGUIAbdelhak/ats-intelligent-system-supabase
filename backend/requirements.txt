@@ -1,0 +1,32 @@
+# FastAPI
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Supabase
+supabase>=2.0.0
+
+# OCR - Docling
+docling>=2.67.0
+docling-core>=2.50.1
+
+# Fallback OCR
+PyPDF2>=3.0.1
+pdfplumber>=0.10.3
+Pillow>=10.1.0
+
+# LLM - Groq (via httpx)
+httpx>=0.26.0
+
+# Embeddings - sentence-transformers (384-dim all-MiniLM-L6-v2)
+sentence-transformers>=2.2.2
+numpy<2.0.0
+
+# Utilities
+python-dotenv>=1.0.0
+python-dateutil>=2.8.2
+
+# Optional: for structured logging
+structlog>=23.2.0
