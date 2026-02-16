@@ -48,6 +48,20 @@ async def upload_file(
         raise
 
 
+def download_file(file_path: str) -> Optional[bytes]:
+    """
+    Download file content from Supabase Storage.
+    Returns None if file doesn't exist.
+    """
+    try:
+        supabase = get_supabase()
+        result = supabase.storage.from_(BUCKET).download(file_path)
+        return result
+    except Exception as e:
+        logger.warning(f"Storage download failed for {file_path}: {e}")
+        return None
+
+
 def create_signed_url(file_path: str, expires_in: int = 3600) -> Optional[str]:
     """
     Create a signed URL for secure access to the original document.

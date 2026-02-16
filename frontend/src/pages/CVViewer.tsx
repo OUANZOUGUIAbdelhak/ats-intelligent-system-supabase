@@ -27,7 +27,10 @@ export function CVViewer() {
   const ci = cv.structured_data?.candidate_info ?? cv.candidate_info ?? {}
   const experiences = cv.structured_data?.experiences ?? cv.experiences ?? []
   const skills = cv.structured_data?.skills ?? cv.skills ?? []
-  const signedUrl = cv.signed_url
+  const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+  const originalUrl = cv.original_file_path
+    ? (apiBase ? `${apiBase}/api/cv/${cvId}/original` : `/api/cv/${cvId}/original`)
+    : null
 
   return (
     <div className="space-y-6">
@@ -39,18 +42,39 @@ export function CVViewer() {
           <ArrowLeft className="w-5 h-5" />
           Back
         </button>
-        {signedUrl && (
+        {originalUrl && (
           <a
-            href={signedUrl}
+            href={originalUrl}
             target="_blank"
             rel="noopener noreferrer"
+            download={cv.original_filename || 'document.pdf'}
             className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
           >
             <Download className="w-4 h-4" />
-            View / Download original
+            View / Download original PDF
           </a>
         )}
       </div>
+
+      {originalUrl ? (
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 overflow-hidden">
+          <h2 className="text-lg font-semibold mb-3 text-slate-900 dark:text-white">Original PDF</h2>
+          <iframe
+            src={originalUrl}
+            title="Original CV document"
+            className="w-full min-h-[600px] rounded-lg border border-slate-200 dark:border-slate-600"
+          />
+          <p className="mt-2 text-sm text-slate-500">
+            If the PDF does not load, the file may not exist in storage (e.g. text-only demo).
+          </p>
+        </div>
+      ) : (
+        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <p className="text-slate-600 dark:text-slate-400">
+            Original PDF is not available for this CV.
+          </p>
+        </div>
+      )}
 
       <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
         <div className="flex items-center gap-4 mb-6">

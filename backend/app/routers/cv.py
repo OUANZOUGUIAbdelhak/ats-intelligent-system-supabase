@@ -8,14 +8,14 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from app.core.config import settings
 from app.core.supabase_client import get_supabase
 from app.services.ocr_service import extract_text
 from app.services.llm_structuring import structure_cv_flexible
 from app.services.embedding_service import generate_embedding
-from app.services.storage_service import upload_file, create_signed_url
+from app.services.storage_service import upload_file, create_signed_url, download_file
 
 logger = logging.getLogger(__name__)
 
@@ -209,6 +209,32 @@ async def search_cvs(
     }
 
 
+@router.get("/{cv_id}/original")
+async def get_cv_original_file(cv_id: str):
+    """
+    Stream the original PDF/file from storage.
+    Use this for viewing/downloading - more reliable than signed URLs.
+    """
+    supabase = get_supabase()
+    r = supabase.table("cv_documents").select("original_file_path", "original_filename", "mime_type").eq("id", cv_id).execute()
+    if not r.data or len(r.data) == 0:
+        raise HTTPException(404, "CV not found")
+    row = r.data[0]
+    path = row.get("original_file_path")
+    if not path:
+        raise HTTPException(404, "Original file not stored")
+    content = download_file(path)
+    if content is None:
+        raise HTTPException(404, "Original file not found in storage")
+    filename = row.get("original_filename") or "document.pdf"
+    mime = row.get("mime_type") or "application/pdf"
+    return Response(
+        content=content,
+        media_type=mime,
+        headers={"Content-Disposition": f'inline; filename="{filename}"'},
+    )
+
+
 @router.get("/{cv_id}")
 async def get_cv(cv_id: str):
     """
@@ -221,10 +247,12 @@ async def get_cv(cv_id: str):
         raise HTTPException(404, "CV not found")
 
     row = r.data[0]
-    signed_url = create_signed_url(
-        row["original_file_path"],
-        expires_in=settings.SIGNED_URL_EXPIRY,
-    )
+    signed_url = None
+    if row.get("original_file_path"):
+        signed_url = create_signed_url(
+            row["original_file_path"],
+            expires_in=settings.SIGNED_URL_EXPIRY,
+        )
 
     return {
         "id": row["id"],
