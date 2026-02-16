@@ -2,9 +2,9 @@
 Supabase storage service - upload files, generate signed URLs.
 """
 
-import io
 import logging
-import uuid
+import os
+import tempfile
 from typing import Optional
 
 from app.core.config import settings
@@ -29,12 +29,19 @@ async def upload_file(
     path = f"{user_id}/{cv_id}/{filename}"
 
     try:
-        from io import BytesIO
-        supabase.storage.from_(BUCKET).upload(
-            path=path,
-            file=BytesIO(file_content),
-            file_options={"content-type": _get_content_type(filename)},
-        )
+        # storage3 expects a file path (str), not BytesIO - use temp file
+        ext = "." + filename.split(".")[-1] if "." in filename else ""
+        with tempfile.NamedTemporaryFile(delete=False, suffix=ext or ".bin") as tmp:
+            tmp.write(file_content)
+            tmp_path = tmp.name
+        try:
+            supabase.storage.from_(BUCKET).upload(
+                path=path,
+                file=tmp_path,
+                file_options={"content-type": _get_content_type(filename)},
+            )
+        finally:
+            os.unlink(tmp_path)
         return path
     except Exception as e:
         logger.error(f"Storage upload failed: {e}")

@@ -5,8 +5,10 @@ python-multipart>=0.0.6
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
 
-# Supabase
-supabase>=2.0.0
+# Supabase (require compatible versions to avoid "unexpected keyword argument 'proxy'" error)
+supabase>=2.10.0
+httpx>=0.28.0
+websockets>=14,<16
 
 # OCR - Docling
 docling>=2.67.0
@@ -17,8 +19,7 @@ PyPDF2>=3.0.1
 pdfplumber>=0.10.3
 Pillow>=10.1.0
 
-# LLM - Groq (via httpx)
-httpx>=0.26.0
+# LLM - Groq (via httpx - version set above)
 
 # Embeddings - sentence-transformers (384-dim all-MiniLM-L6-v2)
 sentence-transformers>=2.2.2
@@ -30,3 +31,6 @@ python-dateutil>=2.8.2
 
 # Optional: for structured logging
 structlog>=23.2.0
+
+# Sample PDF generation (scripts/generate_resume_pdfs.py)
+reportlab>=4.0.0

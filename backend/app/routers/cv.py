@@ -150,40 +150,6 @@ async def ingest_cv(
     )
 
 
-@router.get("/{cv_id}")
-async def get_cv(cv_id: str):
-    """
-    Get CV by ID. Returns signed URL for original, raw_text, structured_data, embedding preview.
-    """
-    supabase = get_supabase()
-    r = supabase.table("cv_documents").select("*").eq("id", cv_id).execute()
-
-    if not r.data or len(r.data) == 0:
-        raise HTTPException(404, "CV not found")
-
-    row = r.data[0]
-    signed_url = create_signed_url(
-        row["original_file_path"],
-        expires_in=settings.SIGNED_URL_EXPIRY,
-    )
-
-    return {
-        "id": row["id"],
-        "raw_text": row.get("raw_text", ""),
-        "structured_data": row.get("structured_data", {}),
-        "original_file_path": row["original_file_path"],
-        "signed_url": signed_url,
-        "status": row.get("status", "unknown"),
-        "quality_score": row.get("quality_score", 0),
-        "embedding_preview": {
-            "dimension": len(row["embedding"]) if row.get("embedding") else 0,
-            "first_5": (row["embedding"] or [])[:5],
-        },
-        "original_filename": row.get("original_filename"),
-        "created_at": row.get("created_at"),
-    }
-
-
 @router.get("/search")
 async def search_cvs(
     q: Optional[str] = None,
@@ -240,6 +206,40 @@ async def search_cvs(
         "total": count,
         "page": page,
         "limit": limit,
+    }
+
+
+@router.get("/{cv_id}")
+async def get_cv(cv_id: str):
+    """
+    Get CV by ID. Returns signed URL for original, raw_text, structured_data, embedding preview.
+    """
+    supabase = get_supabase()
+    r = supabase.table("cv_documents").select("*").eq("id", cv_id).execute()
+
+    if not r.data or len(r.data) == 0:
+        raise HTTPException(404, "CV not found")
+
+    row = r.data[0]
+    signed_url = create_signed_url(
+        row["original_file_path"],
+        expires_in=settings.SIGNED_URL_EXPIRY,
+    )
+
+    return {
+        "id": row["id"],
+        "raw_text": row.get("raw_text", ""),
+        "structured_data": row.get("structured_data", {}),
+        "original_file_path": row["original_file_path"],
+        "signed_url": signed_url,
+        "status": row.get("status", "unknown"),
+        "quality_score": row.get("quality_score", 0),
+        "embedding_preview": {
+            "dimension": len(row["embedding"]) if row.get("embedding") else 0,
+            "first_5": (row["embedding"] or [])[:5],
+        },
+        "original_filename": row.get("original_filename"),
+        "created_at": row.get("created_at"),
     }
 
 

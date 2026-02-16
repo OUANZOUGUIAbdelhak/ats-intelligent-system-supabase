@@ -61,15 +61,26 @@ npm run dev
 
 ### 4. Demo
 
-1. Open http://localhost:5173
-2. Go to **Demo** → click **Load Demo Data**
-3. Four example CVs are processed and stored
-4. Browse **CVs**, **Matching**, and **CV Viewer**
+1. Generate sample PDFs: `python scripts/generate_resume_pdfs.py`
+2. Open http://localhost:5173
+3. Go to **Demo** → click **Load Sample Resumes** (processes 10 PDFs)
+4. Go to **Matching** → click an example job offer to find suitable resumes
+
+## Sample Data
+
+- **10 resume PDFs** in `samples/resumes/` (generate with `python scripts/generate_resume_pdfs.py`)
+- **8 example job offers** in `samples/job_offers.json` (Senior Dev, Data Scientist, DevOps, Frontend, Backend, UX, Security, Junior Dev)
 
 ## Project Structure
 
 ```
 ats-intelligent-system-supabase/
+├── samples/
+│   ├── resumes/           # 10 sample PDFs (generated)
+│   ├── resume_contents.py # Content for PDF generation
+│   └── job_offers.json    # Example job offers
+├── scripts/
+│   └── generate_resume_pdfs.py
 ├── backend/
 │   ├── app/
 │   │   ├── main.py

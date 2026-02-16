@@ -3,8 +3,13 @@ Application configuration - loads from environment variables.
 """
 
 import os
+from pathlib import Path
 from typing import Optional
 from pydantic_settings import BaseSettings
+
+# Resolve .env path: app/core/config.py -> backend/
+_BACKEND_ROOT = Path(__file__).resolve().parent.parent.parent
+_ENV_FILE = _BACKEND_ROOT / ".env"
 
 
 class Settings(BaseSettings):
@@ -44,7 +49,8 @@ class Settings(BaseSettings):
     SIGNED_URL_EXPIRY: int = int(os.getenv("SIGNED_URL_EXPIRY", "3600"))
 
     class Config:
-        env_file = ".env"
+        env_file = str(_ENV_FILE) if _ENV_FILE.exists() else ".env"
+        env_file_encoding = "utf-8"
         case_sensitive = False
 
 

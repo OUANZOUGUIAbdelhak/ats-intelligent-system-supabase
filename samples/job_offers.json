@@ -1,0 +1,66 @@
+[
+  {
+    "id": "job-001",
+    "title": "Senior Full Stack Developer",
+    "description": "We are looking for a Senior Full Stack Developer with 5+ years of experience. You will build scalable web applications using React and Python (FastAPI/Django). Experience with PostgreSQL, Docker, and AWS is required. You will lead technical decisions and mentor junior developers.",
+    "required_skills": ["Python", "React", "JavaScript", "PostgreSQL", "Docker", "AWS"],
+    "location": "San Francisco, CA",
+    "department": "Engineering"
+  },
+  {
+    "id": "job-002",
+    "title": "Data Scientist",
+    "description": "Join our ML team to build recommendation systems and NLP models. PhD or 4+ years in data science. Strong Python, TensorFlow/PyTorch, and statistical modeling. Experience with A/B testing and production ML pipelines.",
+    "required_skills": ["Python", "Machine Learning", "TensorFlow", "PyTorch", "SQL", "NLP"],
+    "location": "New York, NY",
+    "department": "Data"
+  },
+  {
+    "id": "job-003",
+    "title": "DevOps Engineer",
+    "description": "Infrastructure and CI/CD expert needed. Kubernetes, Terraform, AWS. Reduce deployment times, improve reliability. 5+ years experience with cloud and automation.",
+    "required_skills": ["Kubernetes", "Terraform", "AWS", "Docker", "CI/CD", "Linux"],
+    "location": "Austin, TX",
+    "department": "Platform"
+  },
+  {
+    "id": "job-004",
+    "title": "Frontend Developer",
+    "description": "Build beautiful, responsive UIs with React and TypeScript. 3+ years frontend experience. Knowledge of design systems, accessibility, and performance optimization.",
+    "required_skills": ["React", "TypeScript", "CSS", "Figma", "Next.js"],
+    "location": "Remote",
+    "department": "Product"
+  },
+  {
+    "id": "job-005",
+    "title": "Backend Engineer",
+    "description": "Design and build high-performance APIs. Python or Go. PostgreSQL, Redis, microservices. 4+ years backend development.",
+    "required_skills": ["Python", "PostgreSQL", "Redis", "REST API", "Docker"],
+    "location": "Chicago, IL",
+    "department": "Engineering"
+  },
+  {
+    "id": "job-006",
+    "title": "UX Designer",
+    "description": "User research, wireframing, and prototyping. 3+ years UX design. Figma proficiency. Collaborate with product and engineering.",
+    "required_skills": ["Figma", "User Research", "Prototyping", "Wireframes", "Usability"],
+    "location": "Denver, CO",
+    "department": "Design"
+  },
+  {
+    "id": "job-007",
+    "title": "Security Engineer",
+    "description": "Application and infrastructure security. Penetration testing, vulnerability assessment. 5+ years security experience. OWASP, compliance knowledge.",
+    "required_skills": ["Penetration Testing", "OWASP", "Python", "Compliance", "SIEM"],
+    "location": "Boston, MA",
+    "department": "Security"
+  },
+  {
+    "id": "job-008",
+    "title": "Junior Software Developer",
+    "description": "Entry-level full stack developer. CS degree or bootcamp. Eager to learn React and Python. Mentorship provided.",
+    "required_skills": ["JavaScript", "Python", "React", "Git", "SQL"],
+    "location": "Portland, OR",
+    "department": "Engineering"
+  }
+]
