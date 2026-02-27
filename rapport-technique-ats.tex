@@ -1,0 +1,1840 @@
+% =============================================================================
+% ATS Intelligent System — Rapport Technique Exhaustif (40+ pages)
+% Format LaTeX prêt pour Overleaf
+% Date : 27 février 2026
+% =============================================================================
+
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{tocloft}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+
+% -----------------------------------------------------------------------------
+% Configuration des marges et mise en page
+% -----------------------------------------------------------------------------
+\geometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2.5cm,
+  right=2.5cm,
+  headheight=15pt,
+  headsep=0.8cm,
+  footskip=1.2cm
+}
+
+% -----------------------------------------------------------------------------
+% Couleurs sobres (palette professionnelle)
+% -----------------------------------------------------------------------------
+\definecolor{primaryblue}{RGB}{2,132,199}
+\definecolor{primarydark}{RGB}{3,105,161}
+\definecolor{slategray}{RGB}{71,85,105}
+\definecolor{lightgray}{RGB}{241,245,249}
+\definecolor{codebg}{RGB}{248,250,252}
+
+% -----------------------------------------------------------------------------
+% En-têtes et pieds de page
+% -----------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{slategray}{ATS Intelligent System}}
+\fancyhead[R]{\small\textcolor{slategray}{\nouppercase{\rightmark}}}
+\fancyfoot[C]{\small\textcolor{slategray}{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{primaryblue}\leaders\hrule height \headrulewidth\hfill}}
+
+% -----------------------------------------------------------------------------
+% Style des titres
+% -----------------------------------------------------------------------------
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{primarydark}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{primaryblue}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{slategray}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+
+% -----------------------------------------------------------------------------
+% Configuration des listings (code source)
+% -----------------------------------------------------------------------------
+\lstdefinestyle{codebase}{
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  frame=single,
+  framesep=5pt,
+  backgroundcolor=\color{codebg},
+  rulecolor=\color{lightgray},
+  keywordstyle=\color{primarydark}\bfseries,
+  commentstyle=\color{slategray}\itshape,
+  stringstyle=\color{primaryblue},
+  numbers=left,
+  numberstyle=\tiny\color{slategray},
+  numbersep=10pt,
+  showstringspaces=false,
+  tabsize=2,
+  captionpos=b,
+  xleftmargin=2em,
+  framexleftmargin=1.5em,
+  keepspaces=true
+}
+\lstset{style=codebase}
+
+% -----------------------------------------------------------------------------
+% Hyperliens
+% -----------------------------------------------------------------------------
+\hypersetup{
+  colorlinks=true,
+  linkcolor=primaryblue,
+  urlcolor=primaryblue,
+  citecolor=primarydark,
+  pdftitle={ATS Intelligent System — Rapport Technique},
+  pdfauthor={Équipe ATS}
+}
+
+% -----------------------------------------------------------------------------
+% Début du document
+% -----------------------------------------------------------------------------
+\begin{document}
+
+% =============================================================================
+% PAGE DE TITRE
+% =============================================================================
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  {\Huge\bfseries\color{primarydark} ATS Intelligent System\par}
+  \vspace{0.5cm}
+  {\LARGE Système de Suivi des Candidatures\par}
+  {\LARGE avec OCR, LLM et Recherche Sémantique\par}
+  \vspace{2cm}
+  {\large Rapport Technique Exhaustif\par}
+  \vspace{2cm}
+  \begin{tcolorbox}[colback=lightgray,colframe=primaryblue,width=0.85\textwidth,arc=4pt]
+    \textbf{Équipe projet}\\[0.5em]
+    Projet open source — \url{https://github.com/OUANZOUGUIAbdelhak/ats-intelligent-system-supabase}\\[0.3em]
+    \textit{Les noms et rôles détaillés des contributeurs sont à compléter depuis le document de conception (Design sans titre.pdf).}
+  \end{tcolorbox}
+  \vfill
+  {\large 27 février 2026\par}
+  \vspace{1cm}
+\end{titlepage}
+
+% =============================================================================
+% TABLE DES MATIÈRES
+% =============================================================================
+\tableofcontents
+\newpage
+\lstlistoflistings
+\addcontentsline{toc}{chapter}{Liste des listings}
+\listoftables
+\addcontentsline{toc}{chapter}{Liste des tableaux}
+\newpage
+
+% =============================================================================
+% CHAPITRE 1 : INTRODUCTION ET CONTEXTE
+% =============================================================================
+\chapter{Introduction et contexte}
+
+\section{Vision du projet et problématique métier}
+
+L'\textbf{ATS Intelligent System} (Applicant Tracking System) est une plateforme de gestion des candidatures conçue pour automatiser et rationaliser le processus de recrutement. Le projet s'inscrit dans une démarche de \textit{Proof of Concept} (POC) visant à démontrer la faisabilité technique d'un pipeline complet d'ingestion, de structuration et de recherche sémantique de CV, en s'appuyant exclusivement sur des outils modernes et une infrastructure simplifiée.
+
+\subsection{Contexte business}
+
+Les équipes RH et les recruteurs font face à plusieurs défis majeurs :
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Volume} : Des centaines voire des milliers de CV reçus pour une seule offre, nécessitant un tri rapide et fiable.
+  \item \textbf{Hétérogénéité} : Les CV arrivent dans des formats variés (PDF natifs, PDF scannés, Word, images) avec des structures et mises en page très diverses, rendant l'extraction automatique complexe.
+  \item \textbf{Traitement manuel chronophage} : La lecture et l'extraction manuelle des informations clés (compétences, expériences, formation) sont longues, coûteuses et sujettes aux erreurs humaines.
+  \item \textbf{Recherche par mots-clés limitée} : Les recherches textuelles classiques (LIKE, full-text search) ne capturent pas la sémantique. Par exemple, un candidat qui mentionne « développement d'applications web avec React et Node.js » ne sera pas trouvé par une recherche sur « full stack JavaScript » sans une approche sémantique.
+  \item \textbf{Manque de structuration exploitable} : Les données extraites doivent être normalisées et exploitables pour du matching, du scoring et de l'analyse statistique.
+\end{itemize}
+
+\subsection{Objectifs stratégiques du projet}
+
+Le projet vise quatre objectifs principaux :
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Extraction automatique robuste} : Utiliser l'OCR pour extraire le texte brut de tout document (PDF, DOCX, images), avec des fallbacks en cas d'échec du moteur principal.
+  \item \textbf{Structuration intelligente et flexible} : S'appuyer sur un LLM pour produire une représentation JSON fidèle au contenu réel du CV, sans imposer un schéma rigide qui pourrait perdre des informations.
+  \item \textbf{Recherche sémantique performante} : Générer des embeddings vectoriels et utiliser une base vectorielle pour une recherche par similarité cosinus, permettant de trouver des candidats pertinents même avec des formulations différentes.
+  \item \textbf{Simplicité d'infrastructure} : S'appuyer uniquement sur Supabase (Postgres, Storage, Auth) — sans Docker, MongoDB, MinIO, ChromaDB, RabbitMQ ou Redis — pour réduire la complexité opérationnelle et les coûts.
+\end{enumerate}
+
+\subsection{Méthodologie POC}
+
+Le projet repose sur une approche de \textit{Proof of Concept} : démontrer la faisabilité technique avec un minimum de complexité. Les outils choisis (Python pour le traitement des données et le NLP, Supabase pour l'infrastructure) garantissent une manipulation efficace et précise des CV en masse. Le dépôt open source (\url{https://github.com/OUANZOUGUIAbdelhak/ats-intelligent-system-supabase}) permet la réutilisation et l'adaptation du code.
+
+\section{Périmètre fonctionnel}
+
+Le système couvre les fonctionnalités suivantes :
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Ingestion} : Upload de CV (PDF, DOCX, JPEG, PNG), exécution synchrone du pipeline complet (OCR $\rightarrow$ LLM $\rightarrow$ Embedding $\rightarrow$ Stockage).
+  \item \textbf{Consultation} : Liste paginée des CV, détail avec visualisation du PDF original, données structurées, texte brut OCR.
+  \item \textbf{Recherche sémantique} : Saisie d'une description de poste ou sélection d'une offre exemple, retour des CV les plus similaires avec score de similarité.
+  \item \textbf{Scoring multi-critères} : Évaluation des candidats selon des critères pondérés (compétences, expérience, formation, qualité du CV).
+  \item \textbf{Démo} : Chargement de 10 CVs PDF exemples et 8 offres d'emploi pour tester le système sans configuration préalable.
+\end{itemize}
+
+% =============================================================================
+% CHAPITRE 2 : STACK TECHNIQUE ET JUSTIFICATION DES CHOIX
+% =============================================================================
+\chapter{Stack technique et justification des choix}
+
+\section{Vue d'ensemble de la stack}
+
+\begin{table}[H]
+  \centering
+  \caption{Stack technique complète du projet}
+  \small
+  \begin{tabular}{@{}llp{6cm}@{}}
+    \toprule
+    \textbf{Couche} & \textbf{Technologie} & \textbf{Rôle} \\
+    \midrule
+    Backend & FastAPI, Python 3.11+ & API REST, orchestration du pipeline \\
+    Frontend & React 18, TypeScript, Vite, Tailwind & Interface utilisateur SPA \\
+    Base de données & Supabase Postgres + pgvector & Données structurées, embeddings \\
+    Stockage & Supabase Storage & Fichiers PDF/DOCX/images originaux \\
+    Auth & Supabase Auth & Authentification (optionnel en démo) \\
+    OCR & Docling (fallback: PyPDF2, Tesseract) & Extraction de texte \\
+    LLM & Groq (Llama 3.3 70B) & Structuration JSON des CV \\
+    Embeddings & sentence-transformers all-MiniLM-L6-v2 & Vecteurs 384 dimensions \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Pourquoi FastAPI pour le backend ?}
+
+\subsection{Avantages de FastAPI}
+
+FastAPI a été choisi pour le backend pour plusieurs raisons :
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Performance} : Basé sur Starlette et Uvicorn (ASGI), FastAPI offre des performances comparables à Node.js et Go grâce à l'asyncio natif de Python.
+  \item \textbf{Typage et validation} : L'intégration avec Pydantic permet une validation automatique des requêtes et réponses, une génération de schémas OpenAPI et une documentation interactive (Swagger/ReDoc) sans effort supplémentaire.
+  \item \textbf{Asynchrone} : Le support natif de \texttt{async/await} est essentiel pour les appels à des APIs externes (Groq) et les opérations I/O (lecture de fichiers, requêtes DB) sans bloquer le thread.
+  \item \textbf{Écosystème Python} : Le projet utilise des bibliothèques Python pour l'OCR (Docling), les embeddings (sentence-transformers) et le LLM (httpx vers Groq). Un backend Python unifie tout le pipeline.
+  \item \textbf{Simplicité de déploiement} : Un seul processus \texttt{uvicorn} suffit ; pas besoin de Gunicorn pour un POC.
+\end{itemize}
+
+\subsection{Alternatives considérées}
+
+\begin{table}[H]
+  \centering
+  \caption{Comparaison des frameworks backend}
+  \small
+  \begin{tabular}{@{}lp{3cm}p{3cm}p{3cm}@{}}
+    \toprule
+    \textbf{Framework} & \textbf{Avantages} & \textbf{Inconvénients} & \textbf{Verdict} \\
+    \midrule
+    Django REST & Mature, ORM intégré & Lourd, synchrone par défaut, moins adapté au pipeline async & Rejeté \\
+    Flask & Léger, flexible & Pas de validation native, pas d'async, documentation manuelle & Rejeté \\
+    Node.js (Express) & Écosystème JS & OCR et embeddings en Python plus matures ; double stack & Rejeté \\
+    FastAPI & Async, Pydantic, OpenAPI, performant & Plus récent que Django & \textbf{Choix retenu} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Pourquoi React + Vite + Tailwind pour le frontend ?}
+
+\subsection{React 18}
+
+React offre un modèle de composants réutilisables, un écosystème riche (React Query, React Router) et une large adoption. La concurrence (Vue, Svelte) est viable mais React reste le standard pour les applications d'entreprise.
+
+\subsection{Vite}
+
+Vite remplace Create React App (déprécié) et Webpack pour le build. Il utilise esbuild pour le pré-bundling et le HMR (Hot Module Replacement) natif, offrant des temps de démarrage et de rechargement très rapides. Pour un projet de cette taille, Vite est le choix moderne recommandé.
+
+\subsection{Tailwind CSS}
+
+Tailwind permet de styliser sans quitter le JSX, avec des classes utilitaires cohérentes. Le thème personnalisé (couleurs \texttt{primary}, \texttt{slate}) est défini dans \texttt{tailwind.config.js}. Le dark mode (\texttt{dark:}) est supporté via \texttt{darkMode: 'class'}.
+
+\section{Pourquoi Supabase plutôt qu'une stack custom ?}
+
+\subsection{Avantages de Supabase}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Postgres natif} : Supabase est un Postgres managé avec des extensions (pgvector, RLS, Auth, Storage) intégrées. Pas besoin de gérer un serveur Postgres séparé.
+  \item \textbf{pgvector intégré} : L'extension pgvector permet de stocker et rechercher des vecteurs directement dans Postgres, sans base vectorielle externe (Pinecone, Weaviate, Chroma).
+  \item \textbf{Storage + Auth} : Le bucket \texttt{cv-originals} et les politiques RLS sur \texttt{storage.objects} sont configurés dans la même migration. L'authentification (JWT) est prête pour une intégration future.
+  \item \textbf{Coût et simplicité} : Plan gratuit généreux pour un POC ; pas de Docker, pas de Redis, pas de file de messages.
+  \item \textbf{SDK officiel} : Le client Python \texttt{supabase} et le client JS \texttt{@supabase/supabase-js} sont maintenus et documentés.
+\end{itemize}
+
+\subsection{Comparaison : pgvector vs bases vectorielles externes}
+
+\begin{table}[H]
+  \centering
+  \caption{pgvector vs Pinecone vs Chroma}
+  \small
+  \begin{tabular}{@{}lp{2.5cm}p{2.5cm}p{2.5cm}@{}}
+    \toprule
+    \textbf{Critère} & \textbf{pgvector} & \textbf{Pinecone} & \textbf{Chroma} \\
+    \midrule
+    Déploiement & Inclus dans Supabase & Service cloud séparé & Serveur local ou embedding \\
+    Cohérence des données & Même DB que les métadonnées & Sync à gérer & Sync à gérer \\
+    Coût POC & Inclus & Facturation au volume & Gratuit (self-hosted) \\
+    Performance & Suffisant pour $<$100k vecteurs & Optimisé très grande échelle & Variable \\
+    Complexité & Nulle (migration SQL) & API externe, clés & Déploiement Chroma \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{Verdict} : Pour un POC avec des milliers de CV, pgvector dans Supabase est le choix optimal : simplicité, coût nul, pas de service externe à maintenir.
+
+\section{Pourquoi Docling pour l'OCR ?}
+
+\subsection{Fonctionnement de Docling}
+
+Docling est une bibliothèque Python (IBM) qui convertit des documents (PDF, DOCX, images) en texte structuré. Elle utilise un pipeline de détection de layout, reconnaissance de texte et extraction de tables. Le résultat peut être exporté en Markdown (\texttt{render\_as\_markdown}) ou en JSON.
+
+\subsection{Comparaison OCR : Docling vs Tesseract vs PyMuPDF}
+
+\begin{table}[H]
+  \centering
+  \caption{Comparaison des moteurs OCR}
+  \small
+  \begin{tabular}{@{}lp{2.2cm}p{2.2cm}p{2.2cm}@{}}
+    \toprule
+    \textbf{Critère} & \textbf{Docling} & \textbf{Tesseract} & \textbf{PyMuPDF} \\
+    \midrule
+    PDF natifs & Excellent (layout préservé) & N/A (images uniquement) & Bon (texte brut) \\
+    PDF scannés & Bon (OCR intégré) & Bon (images) & Limité \\
+    DOCX & Oui & Non & Non \\
+    Tables & Oui (structure préservée) & Non & Non \\
+    Dépendances & Python pur + modèles & Binaire externe, langues & Léger \\
+    Maintenance & Active (2024) & Mature mais lent & Mature \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{Choix} : Docling pour la qualité et la polyvalence. Les fallbacks PyPDF2 (PDF natifs) et Tesseract (images) sont utilisés si Docling n'est pas disponible ou échoue.
+
+\subsection{Docling en détail : pipeline d'extraction}
+
+Docling suit un pipeline en plusieurs étapes :
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Détection de layout} : Identification des blocs (titres, paragraphes, tableaux, images).
+  \item \textbf{OCR (si nécessaire)} : Pour les PDFs scannés ou les images, un moteur OCR (intégré ou externe) extrait le texte.
+  \item \textbf{Reconnaissance de structure} : Les tableaux sont détectés et leur structure (lignes, colonnes) est préservée.
+  \item \textbf{Export} : Le document peut être exporté en Markdown, JSON ou texte brut. Le projet utilise \texttt{render\_as\_markdown()} pour préserver les titres et listes.
+\end{enumerate}
+
+\textbf{Limite \texttt{max\_num\_pages=100}} : Pour éviter les timeouts sur des documents très longs, Docling est configuré avec une limite de 100 pages. Un CV dépasse rarement 5 pages.
+
+\section{Pourquoi Groq pour le LLM ?}
+
+\subsection{Avantages de Groq}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Latence très faible} : Groq utilise des accélérateurs LPU (Language Processing Unit) offrant des temps de réponse de l'ordre de la seconde pour des modèles comme Llama 3.3 70B.
+  \item \textbf{API OpenAI-compatible} : L'endpoint \texttt{/chat/completions} est identique à OpenAI, ce qui simplifie l'intégration (httpx, pas de SDK propriétaire).
+  \item \textbf{Mode JSON structuré} : Le paramètre \texttt{response\_format: \{ type: "json\_object" \}} force le modèle à retourner du JSON valide, évitant le parsing d'erreurs.
+  \item \textbf{Coût} : Plan gratuit généreux pour le développement.
+\end{itemize}
+
+\subsection{Fonctionnement du mode JSON}
+
+Groq (comme OpenAI) accepte \texttt{response\_format: \{ type: "json\_object" \}}. Le modèle est alors contraint de produire uniquement du JSON valide, sans texte avant ou après. Cela élimine les erreurs de parsing courantes avec les LLM (blocs markdown, explications autour du JSON).
+
+\section{Pourquoi sentence-transformers all-MiniLM-L6-v2 ?}
+
+\subsection{Caractéristiques du modèle}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Dimension} : 384 — compatible avec pgvector \texttt{vector(384)}.
+  \item \textbf{Taille} : ~80 Mo — chargement en mémoire acceptable pour un serveur.
+  \item \textbf{Performance} : Bon compromis qualité/vitesse pour des textes de longueur moyenne (CV : 500–3000 tokens).
+  \item \textbf{Multilingue} : Supporte le français et l'anglais, adapté aux CV internationaux.
+\end{itemize}
+
+\subsection{Alternatives}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{OpenAI embeddings} : Qualité supérieure mais coût par requête et dépendance externe.
+  \item \textbf{Cohere} : Similaire à OpenAI.
+  \item \textbf{all-mpnet-base-v2} : Meilleure qualité mais 768 dimensions et plus lent — pgvector supporterait mais index plus lourd.
+\end{itemize}
+
+\textbf{Choix} : all-MiniLM-L6-v2 pour l'autonomie (pas d'API externe), la vitesse et la dimension 384 adaptée à un POC.
+
+\section{Détail de l'algorithme d'embedding}
+
+\subsection{Fonctionnement interne de sentence-transformers}
+
+Le modèle \texttt{all-MiniLM-L6-v2} est un modèle \textit{Siamese} basé sur l'architecture BERT (MiniLM, version allégée). Il a été pré-entraîné sur un large corpus de paires de phrases pour apprendre des représentations vectorielles où des phrases sémantiquement proches ont des vecteurs proches dans l'espace 384-dimensionnel.
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Tokenisation} : Le texte est découpé en tokens (mots ou sous-mots) selon le vocabulaire BERT.
+  \item \textbf{Encodage} : Les tokens passent par les couches Transformer ; la sortie du token \texttt{[CLS]} (ou le mean pooling) donne le vecteur de la phrase.
+  \item \textbf{Normalisation} : Le vecteur est éventuellement normalisé (L2) pour que la similarité cosinus soit directement le produit scalaire.
+\end{enumerate}
+
+\subsection{Choix de la dimension 384}
+
+Une dimension plus élevée (768, 1024) capture plus de nuances mais augmente le coût de stockage et de calcul. Pour des CV (texte de longueur moyenne, vocabulaire technique limité), 384 dimensions offrent un bon compromis. pgvector supporte des dimensions jusqu'à 16000 ; 384 reste léger pour l'index IVFFlat.
+
+\subsection{Impact sur la recherche sémantique}
+
+Deux CV avec des formulations différentes (« 5 ans d'expérience en Python » vs « Cinq années de développement backend avec Python ») produisent des embeddings proches. La similarité cosinus les rapprochera. En revanche, un CV sans mention de Python aura un embedding éloigné. Le seuil \texttt{match\_threshold} (0.3 à 0.5) filtre les résultats trop peu pertinents.
+
+% =============================================================================
+% CHAPITRE 3 : ARCHITECTURE DÉTAILLÉE
+% =============================================================================
+\chapter{Architecture détaillée}
+
+\section{Schéma d'architecture complet}
+
+\begin{lstlisting}[caption={Architecture système (vue globale)}, language=text]
++------------------------------------------------------------------+
+|                        UTILISATEUR                               |
+|                    (navigateur web)                               |
++------------------------------+-----------------------------------+
+                               |
+                               v
++------------------------------------------------------------------+
+|  FRONTEND (React + Vite) - Port 5173                              |
+|  - Dashboard, CVList, CVViewer, Matching, Demo                    |
+|  - TanStack React Query (cache, mutations)                        |
+|  - Axios -> VITE_API_URL (proxy /api -> localhost:8000)           |
+|  - Supabase JS (anon key) pour auth optionnelle                   |
++------------------------------+-----------------------------------+
+                               |
+         POST /api/cv/ingest   |   GET /api/cv/search
+         GET /api/cv/:id       |   POST /api/matching/semantic
+         GET /api/demo/load    |   etc.
+                               v
++------------------------------------------------------------------+
+|  BACKEND (FastAPI + Uvicorn) - Port 8000                          |
+|  - CORS activé (allow_origins=["*"])                              |
+|  - Routers: cv, matching, scoring, demo                           |
+|  - Client Supabase (service_role) -> bypass RLS                   |
++------------------------------+-----------------------------------+
+                               |
+    +--------------------------+--------------------------+
+    |                          |                          |
+    v                          v                          v
++---------+              +-------------+              +-------------+
+| Storage |              | OCR Service |              | LLM Service |
+| Service |              | (Docling)   |              | (Groq)     |
+|         |              +-------------+              +-------------+
+| upload  |                     |                          |
+| signed  |                     v                          v
+| download|              +-------------+              +-------------+
++---------+              | Embedding   |              | structured |
+    |                    | Service     |              | _data      |
+    |                    | (MiniLM)    |              +-------------+
+    |                    +-------------+                     |
+    |                          |                             |
+    v                          v                             v
++------------------------------------------------------------------+
+|  SUPABASE                                                         |
+|  - Postgres: cv_documents, job_offers, match_cv_documents()        |
+|  - Storage: bucket cv-originals (privé)                           |
+|  - Auth: auth.users (pour RLS)                                     |
++------------------------------------------------------------------+
+\end{lstlisting}
+
+\section{Structure détaillée des dossiers}
+
+\begin{lstlisting}[caption={Arborescence complète du projet}]
+ats-intelligent-system-supabase/
+|
+|-- samples/                    # Données d'exemple
+|   |-- resumes/                # 10 PDFs generes (01_... a 10_...)
+|   |-- resume_contents.py      # Contenu texte des 10 CVs
+|   |-- job_offers.json         # 8 offres d'emploi (JSON)
+|   |
+|-- scripts/
+|   |-- generate_resume_pdfs.py # Genere les PDFs avec ReportLab
+|   |
+|-- backend/
+|   |-- app/
+|   |   |-- main.py             # Point d'entree FastAPI
+|   |   |-- core/
+|   |   |   |-- config.py       # Pydantic Settings
+|   |   |   |-- supabase_client.py
+|   |   |-- models/
+|   |   |   |-- cv_document.py   # Pydantic CVDocumentFull, CVSection
+|   |   |-- routers/
+|   |   |   |-- cv.py           # /api/cv/*
+|   |   |   |-- matching.py    # /api/matching/*
+|   |   |   |-- scoring.py     # /api/scoring/*
+|   |   |   |-- demo.py        # /api/demo/*
+|   |   |-- services/
+|   |   |   |-- ocr_service.py
+|   |   |   |-- llm_structuring.py
+|   |   |   |-- embedding_service.py
+|   |   |   |-- storage_service.py
+|   |   |-- schemas/
+|   |   |   |-- responses.py    # cv_document_response()
+|   |   |-- requirements.txt
+|   |
+|-- frontend/
+|   |-- src/
+|   |   |-- main.tsx            # QueryClientProvider, App
+|   |   |-- App.tsx             # Routes React Router
+|   |   |-- components/
+|   |   |   |-- layout/Layout.tsx
+|   |   |   |-- cv/CVUploader.tsx
+|   |   |-- pages/
+|   |   |   |-- Dashboard.tsx, CVList.tsx, CVViewer.tsx
+|   |   |   |-- Matching.tsx, Demo.tsx
+|   |   |-- lib/
+|   |   |   |-- api.ts          # Client Axios
+|   |   |   |-- supabase.ts     # Client Supabase (anon)
+|   |   |   |-- utils.ts        # cn() (clsx + tailwind-merge)
+|   |   |-- styles/globals.css
+|   |-- index.html
+|   |-- vite.config.ts          # Alias @, proxy /api
+|   |-- tailwind.config.js
+|   |-- package.json
+|   |
+|-- docs/
+|   |-- UPDATED_DOCUMENTATION.md
+|   |
+|-- supabase/
+|   |-- migrations/
+|   |   |-- 001_initial.sql      # Tables, RLS, Storage, RPC
+|   |
+|-- README.md
+\end{lstlisting}
+
+\section{Flux de données : pipeline d'ingestion}
+
+Le pipeline d'ingestion est exécuté de manière \textbf{synchrone} lors d'un \texttt{POST /api/cv/ingest}. Chaque étape est détaillée ci-dessous.
+
+\subsection{Étape 1 : Validation et préparation}
+
+\begin{lstlisting}[caption={Validation du fichier (extrait cv.py)}, language=Python]
+# Verification du nom de fichier
+if not file.filename:
+    raise HTTPException(400, "No file provided")
+
+# Verification du type MIME
+ct = file.content_type or "application/octet-stream"
+if ct not in settings.ALLOWED_CONTENT_TYPES:
+    raise HTTPException(400, f"Unsupported type: {ct}")
+# Types autorises: PDF, JPEG, PNG, DOCX
+
+# Verification de la taille (max 10 Mo)
+file_content = await file.read()
+if len(file_content) > settings.MAX_FILE_SIZE_MB * 1024 * 1024:
+    raise HTTPException(400, f"File too large (max {settings.MAX_FILE_SIZE_MB} MB)")
+\end{lstlisting}
+
+\textbf{Erreurs possibles} : 400 si type non supporté ou fichier trop volumineux.
+
+\subsection{Étape 2 : Upload vers Supabase Storage}
+
+Le fichier est uploadé dans le bucket \texttt{cv-originals} au chemin \texttt{\{user\_id\}/\{cv\_id\}/\{filename\}}. Le \texttt{cv\_id} est un UUID v4 généré côté backend. En cas d'échec, une exception est levée et le pipeline s'arrête.
+
+\subsection{Étape 3 : OCR (extraction de texte)}
+
+Le service OCR reçoit le contenu binaire, le nom du fichier et le type MIME. Docling est utilisé en priorité ; en cas d'échec ou d'absence, PyPDF2 (PDF) ou Tesseract (images) prennent le relais. Le résultat contient \texttt{raw\_text}, \texttt{metadata}, \texttt{confidence}, \texttt{method}.
+
+\subsection{Étape 4 : Structuration LLM}
+
+Le \texttt{raw\_text} (tronqué à 8000 caractères pour respecter les limites de contexte) est envoyé à Groq avec un prompt détaillé. Le modèle retourne un JSON avec \texttt{candidate\_info}, \texttt{sections}, \texttt{career\_summary}. La fonction \texttt{\_build\_structured\_data()} transforme ce JSON en structure plate (\texttt{experiences}, \texttt{education}, \texttt{skills}) pour le stockage.
+
+\subsection{Étape 5 : Génération d'embedding}
+
+Le \texttt{raw\_text} complet est encodé par le modèle sentence-transformers. Le résultat est une liste de 384 floats. En cas d'erreur, un vecteur de zéros est retourné pour éviter de bloquer le pipeline.
+
+\subsection{Étape 6 : Calcul du quality score}
+
+Un score heuristique entre 0 et 1 est calculé : +0.3 si \texttt{full\_name}, +0.2 si \texttt{email}, +0.3 si expériences, +0.2 si compétences. Ce score permet un tri rapide des CV les plus complets.
+
+\subsection{Étape 7 : Insertion en base}
+
+Une ligne est insérée dans \texttt{cv\_documents} avec tous les champs. Le statut est \texttt{active}. Le backend utilise la clé \texttt{service\_role}, donc le RLS est contourné.
+
+\subsection{Timing approximatif}
+
+Pour un CV PDF d'une page : Storage $\sim$1 s, OCR $\sim$2–5 s, LLM $\sim$2–4 s, Embedding $\sim$0.5 s. Total : $\sim$6–11 s. Le timeout du frontend (axios) est de 120 s pour l'upload.
+
+\subsection{Gestion des erreurs et cas limites}
+
+\begin{table}[H]
+  \centering
+  \caption{Erreurs possibles à chaque étape du pipeline}
+  \small
+  \begin{tabular}{@{}lp{4cm}p{4cm}@{}}
+    \toprule
+    \textbf{Étape} & \textbf{Erreur possible} & \textbf{Comportement} \\
+    \midrule
+    Validation & Type MIME non supporté & HTTP 400, message explicite \\
+    Validation & Fichier $>$ 10 Mo & HTTP 400 \\
+    Storage & Échec upload Supabase & Exception, pas d'insertion en base \\
+    OCR & Docling échoue & Fallback PyPDF2 ou Tesseract \\
+    OCR & Texte vide & Pipeline continue, raw\_text = "" \\
+    LLM & GROQ\_API\_KEY absent & Fallback parsing, structured\_data vide \\
+    LLM & Timeout ou erreur API & Fallback, structured\_data minimal \\
+    Embedding & Modèle non chargé & Vecteur de zéros (384) \\
+    Embedding & Texte vide & Vecteur de zéros \\
+    Insertion & Contrainte DB violée & Exception propagée, pas de rollback Storage \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{Note} : En cas d'échec après l'upload Storage, le fichier reste dans le bucket. Un job de nettoyage périodique pourrait supprimer les fichiers orphelins (sans ligne en base). Actuellement, ce cas est rare car l'upload est la première étape.
+
+% =============================================================================
+% CHAPITRE 4 : BASE DE DONNÉES SUPABASE
+% =============================================================================
+\chapter{Base de données Supabase}
+
+\section{Extension pgvector}
+
+L'extension \texttt{vector} de Postgres permet de stocker des vecteurs de dimension fixe et d'effectuer des recherches par similarité. Elle doit être activée avant toute création de table avec une colonne \texttt{vector}.
+
+\begin{lstlisting}[caption={Activation de pgvector}, language=SQL]
+CREATE EXTENSION IF NOT EXISTS vector;
+\end{lstlisting}
+
+\section{Table cv\_documents : schéma complet}
+
+\begin{lstlisting}[caption={Définition complète de cv_documents}, language=SQL]
+CREATE TABLE IF NOT EXISTS cv_documents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID,
+    original_file_path TEXT NOT NULL,
+    raw_text TEXT DEFAULT '',
+    structured_data JSONB DEFAULT '{}',
+    embedding vector(384),
+    quality_score FLOAT DEFAULT 0.0,
+    status TEXT DEFAULT 'processing'
+        CHECK (status IN ('pending', 'processing', 'active', 'error', 'archived')),
+    source_type TEXT DEFAULT 'upload',
+    original_filename TEXT,
+    mime_type TEXT,
+    file_size_bytes BIGINT,
+    gdpr_consent BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now(),
+    processing_error TEXT
+);
+\end{lstlisting}
+
+\subsection{Description des colonnes}
+
+\begin{itemize}[leftmargin=*]
+  \item \texttt{id} : Identifiant unique. Généré côté backend (UUID v4) pour pouvoir l'utiliser dans le chemin Storage avant l'insertion.
+  \item \texttt{user\_id} : Référence à \texttt{auth.users.id}. Permet le filtrage RLS. En démo : \texttt{00000000-0000-0000-0000-000000000000}.
+  \item \texttt{original\_file\_path} : Chemin dans le bucket, ex. \texttt{<user\_id>/<cv\_id>/document.pdf}.
+  \item \texttt{raw\_text} : Texte brut extrait par l'OCR. Peut contenir des artefacts (sauts de ligne, caractères bizarres).
+  \item \texttt{structured\_data} : JSON flexible. Structure typique : \texttt{candidate\_info}, \texttt{sections}, \texttt{experiences}, \texttt{education}, \texttt{skills}, \texttt{career\_summary}.
+  \item \texttt{embedding} : Vecteur 384 dimensions. Type \texttt{vector(384)} de pgvector.
+  \item \texttt{quality\_score} : Score 0–1 calculé heuristiquement.
+  \item \texttt{status} : \texttt{pending} (créé, pas encore traité), \texttt{processing} (en cours), \texttt{active} (traité avec succès), \texttt{error} (échec), \texttt{archived} (supprimé logiquement).
+  \item \texttt{source\_type} : \texttt{upload} (utilisateur), \texttt{sample} (démo PDFs), \texttt{demo} (démo textuelle).
+  \item \texttt{gdpr\_consent} : Indique si le candidat a donné son consentement pour le traitement des données.
+\end{itemize}
+
+\section{Structure JSONB de structured\_data}
+
+Le LLM produit un JSON avec la structure suivante (adaptée dynamiquement au contenu du CV) :
+
+\begin{lstlisting}[caption={Exemple de structured_data}, language=JSON]
+{
+  "candidate_info": {
+    "full_name": "John Doe",
+    "email": "john.doe@email.com",
+    "phone": "+1 555-123-4567",
+    "location": "San Francisco, CA",
+    "linkedin_url": null,
+    "summary": "5+ years full-stack development..."
+  },
+  "sections": [
+    {
+      "section_type": "experience",
+      "section_title": "Experience",
+      "order": 1,
+      "content": {
+        "experiences": [
+          {
+            "job_title": "Senior Software Engineer",
+            "company": "TechCorp Inc.",
+            "start_date": "2020",
+            "end_date": "Present",
+            "description": "Microservices with Python/FastAPI..."
+          }
+        ]
+      },
+      "confidence": 0.95
+    },
+    {
+      "section_type": "compétences",
+      "content": { "skills": ["Python", "React", "PostgreSQL"] }
+    }
+  ],
+  "experiences": [...],   // Aplatissement des experiences
+  "education": [...],
+  "skills": [...],
+  "career_summary": {
+    "years_of_experience": 5,
+    "seniority_level": "senior",
+    "primary_expertise": ["Python", "React"]
+  }
+}
+\end{lstlisting}
+
+\section{Index et performances}
+
+\begin{lstlisting}[caption={Index sur cv_documents}, language=SQL]
+-- Index pour les requetes par utilisateur
+CREATE INDEX idx_cv_documents_user_id ON cv_documents(user_id);
+
+-- Index pour le filtrage par statut
+CREATE INDEX idx_cv_documents_status ON cv_documents(status);
+
+-- Index pour le tri chronologique
+CREATE INDEX idx_cv_documents_created_at ON cv_documents(created_at DESC);
+
+-- Index IVFFlat pour la recherche vectorielle (similarite cosinus)
+CREATE INDEX IF NOT EXISTS idx_cv_documents_embedding ON cv_documents
+    USING ivfflat (embedding vector_cosine_ops)
+    WITH (lists = 10);
+
+-- Index GIN pour les requetes JSONB
+CREATE INDEX idx_cv_documents_structured ON cv_documents
+    USING GIN (structured_data jsonb_path_ops);
+\end{lstlisting}
+
+\textbf{IVFFlat} : L'algorithme IVFFlat (Inverted File with Flat quantization) partitionne l'espace vectoriel en \texttt{lists} clusters. La recherche se fait d'abord dans les clusters les plus proches, ce qui réduit le nombre de comparaisons. \texttt{lists = 10} est adapté à une table de quelques milliers de lignes ; pour des volumes plus importants, une règle courante est \texttt{lists = sqrt(n)}.
+
+\section{Row Level Security (RLS) : implémentation détaillée}
+
+\subsection{Principe du RLS}
+
+Le RLS (Row Level Security) est une fonctionnalité de Postgres qui filtre automatiquement les lignes selon des politiques. Même si une requête \texttt{SELECT * FROM cv\_documents} est exécutée, seules les lignes pour lesquelles la politique retourne \texttt{true} sont visibles. Les politiques utilisent \texttt{auth.uid()} qui retourne l'UUID de l'utilisateur authentifié (JWT Supabase).
+
+\subsection{Politiques sur cv\_documents}
+
+\begin{lstlisting}[caption={Politiques RLS cv_documents}, language=SQL]
+ALTER TABLE cv_documents ENABLE ROW LEVEL SECURITY;
+
+-- SELECT : l'utilisateur ne voit que ses propres CVs
+CREATE POLICY "Users can view own CVs"
+    ON cv_documents FOR SELECT
+    USING (auth.uid() = user_id);
+
+-- INSERT : l'utilisateur ne peut inserer qu'avec son propre user_id
+CREATE POLICY "Users can insert own CVs"
+    ON cv_documents FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+-- UPDATE : l'utilisateur ne peut modifier que ses CVs
+CREATE POLICY "Users can update own CVs"
+    ON cv_documents FOR UPDATE
+    USING (auth.uid() = user_id);
+
+-- DELETE : l'utilisateur ne peut supprimer que ses CVs
+CREATE POLICY "Users can delete own CVs"
+    ON cv_documents FOR DELETE
+    USING (auth.uid() = user_id);
+\end{lstlisting}
+
+\textbf{Service role} : Le client Supabase du backend utilise la clé \texttt{service\_role}. Cette clé contourne le RLS : toutes les lignes sont accessibles. C'est nécessaire car le backend doit pouvoir insérer des CVs pour n'importe quel \texttt{user\_id} (extrait du JWT en production) et effectuer des recherches sans restriction côté serveur.
+
+\section{Storage : bucket cv-originals}
+
+\begin{lstlisting}[caption={Création du bucket et politiques Storage}, language=SQL]
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'cv-originals',
+  'cv-originals',
+  false,                    -- Bucket prive
+  10485760,                 -- 10 Mo max
+  ARRAY['application/pdf', 'image/jpeg', 'image/png',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- INSERT : upload uniquement dans son dossier (premier segment = user_id)
+CREATE POLICY "Users can upload own CVs"
+    ON storage.objects FOR INSERT
+    WITH CHECK (
+        bucket_id = 'cv-originals'
+        AND auth.role() = 'authenticated'
+        AND (storage.foldername(name))[1] = auth.uid()::text
+    );
+
+-- SELECT : lecture uniquement de ses fichiers
+CREATE POLICY "Users can read own CVs"
+    ON storage.objects FOR SELECT
+    USING (
+        bucket_id = 'cv-originals'
+        AND auth.role() = 'authenticated'
+        AND (storage.foldername(name))[1] = auth.uid()::text
+    );
+
+-- DELETE : suppression uniquement de ses fichiers
+CREATE POLICY "Users can delete own CVs"
+    ON storage.objects FOR DELETE
+    USING (...);
+\end{lstlisting}
+
+\textbf{Chemin} : \texttt{storage.foldername(name)} retourne un tableau des segments du chemin. Le premier segment doit être égal à \texttt{auth.uid()::text} pour que la politique soit satisfaite. Exemple : \texttt{<user\_id>/<cv\_id>/fichier.pdf}.
+
+\section{Fonction RPC match\_cv\_documents}
+
+\subsection{Algorithme de similarité cosinus}
+
+La similarité cosinus entre deux vecteurs $\mathbf{a}$ et $\mathbf{b}$ est définie par :
+\[
+\text{similarity} = \frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{a}\| \|\mathbf{b}\|} = 1 - \text{distance}
+\]
+pgvector utilise l'opérateur \texttt{<=>} pour la distance cosinus (1 - similarité). Donc \texttt{1 - (a <=> b)} donne la similarité.
+
+\begin{lstlisting}[caption={Fonction match_cv_documents}, language=SQL]
+CREATE OR REPLACE FUNCTION match_cv_documents(
+    query_embedding vector(384),
+    match_threshold float DEFAULT 0.5,
+    match_count int DEFAULT 10
+)
+RETURNS TABLE (id uuid, similarity float)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        cv_documents.id,
+        1 - (cv_documents.embedding <=> query_embedding) AS similarity
+    FROM cv_documents
+    WHERE cv_documents.embedding IS NOT NULL
+      AND 1 - (cv_documents.embedding <=> query_embedding) > match_threshold
+    ORDER BY cv_documents.embedding <=> query_embedding
+    LIMIT match_count;
+END;
+$$;
+\end{lstlisting}
+
+\textbf{Paramètres} :
+\begin{itemize}[leftmargin=*]
+  \item \texttt{query\_embedding} : Vecteur de la requête (description de poste encodée).
+  \item \texttt{match\_threshold} : Seuil minimal de similarité (0.5 = 50\%). Les CV en dessous sont exclus.
+  \item \texttt{match\_count} : Nombre maximum de résultats.
+\end{itemize}
+
+\subsection{Formule mathématique de la similarité cosinus}
+
+Pour deux vecteurs $\mathbf{a} = (a_1, \ldots, a_n)$ et $\mathbf{b} = (b_1, \ldots, b_n)$, la similarité cosinus est :
+\[
+\text{sim}(\mathbf{a}, \mathbf{b}) = \frac{\sum_{i=1}^{n} a_i b_i}{\sqrt{\sum_{i=1}^{n} a_i^2} \cdot \sqrt{\sum_{i=1}^{n} b_i^2}}
+\]
+Elle varie entre $-1$ et $1$ (souvent entre $0$ et $1$ pour des embeddings normalisés). Une valeur de $1$ signifie une identité parfaite ; $0$ signifie orthogonalité (pas de similarité). pgvector utilise \texttt{<=>} pour la distance cosinus : $\text{distance} = 1 - \text{sim}$. Donc \texttt{1 - (a <=> b) = sim}.
+
+\subsection{Trigger updated\_at}
+
+Un trigger met à jour \texttt{updated\_at} à chaque \texttt{UPDATE} :
+
+\begin{lstlisting}[caption={Trigger updated_at}, language=SQL]
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_cv_documents_updated_at
+    BEFORE UPDATE ON cv_documents
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+\end{lstlisting}
+
+\section{Table job\_offers}
+
+Table optionnelle pour stocker des offres d'emploi (utilisée par le frontend pour les exemples ; les vraies offres pourraient être en base) :
+
+\begin{lstlisting}[caption={Table job_offers}, language=SQL]
+CREATE TABLE IF NOT EXISTS job_offers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID,
+    title TEXT NOT NULL,
+    description TEXT,
+    required_skills TEXT[],
+    location TEXT,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE job_offers ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage own job offers" ON job_offers
+    FOR ALL USING (auth.uid() = user_id);
+\end{lstlisting}
+
+% =============================================================================
+% CHAPITRE 5 : BACKEND — ANALYSE DÉTAILLÉE DU CODE
+% =============================================================================
+\chapter{Backend : analyse détaillée du code}
+
+\section{Dépendances backend : requirements.txt}
+
+\begin{lstlisting}[caption={requirements.txt — dépendances Python}, language=text]
+# FastAPI et serveur
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Supabase (versions compatibles pour eviter erreurs)
+supabase>=2.10.0
+httpx>=0.28.0
+websockets>=14,<16
+
+# OCR
+docling>=2.67.0
+docling-core>=2.50.1
+PyPDF2>=3.0.1
+pdfplumber>=0.10.3
+Pillow>=10.1.0
+
+# Embeddings
+sentence-transformers>=2.2.2
+numpy<2.0.0
+
+# Utilitaires
+python-dotenv>=1.0.0
+reportlab>=4.0.0  # Generation PDFs demo
+\end{lstlisting}
+
+\textbf{numpy<2.0.0} : sentence-transformers peut avoir des incompatibilités avec NumPy 2.x ; la contrainte évite les erreurs.
+
+\textbf{httpx} : Client HTTP asynchrone pour les appels à l'API Groq. Plus moderne que \texttt{requests} et compatible async.
+
+\textbf{python-multipart} : Nécessaire pour FastAPI pour parser les formulaires \texttt{multipart/form-data} (upload de fichiers).
+
+\section{Point d'entrée : main.py}
+
+\begin{lstlisting}[caption={main.py — configuration FastAPI}, language=Python]
+"""
+ATS Intelligent System - FastAPI Backend
+Supabase-native: Postgres (pgvector), Storage, RLS.
+"""
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.routers import cv, matching, scoring, demo
+
+app = FastAPI(
+    title="ATS Intelligent System",
+    description="Applicant Tracking System with OCR, LLM structuring, semantic search",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(cv.router)
+app.include_router(matching.router)
+app.include_router(scoring.router)
+app.include_router(demo.router)
+\end{lstlisting}
+
+\textbf{CORS} : \texttt{allow\_origins=["*"]} autorise toutes les origines. En production, il faudrait restreindre aux domaines du frontend. \texttt{allow\_credentials=True} permet l'envoi de cookies/JWT.
+
+\section{Configuration : core/config.py}
+
+\begin{lstlisting}[caption={config.py — Pydantic Settings}, language=Python]
+from pathlib import Path
+from pydantic_settings import BaseSettings
+
+_BACKEND_ROOT = Path(__file__).resolve().parent.parent.parent
+_ENV_FILE = _BACKEND_ROOT / ".env"
+
+class Settings(BaseSettings):
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    API_HOST: str = os.getenv("API_HOST", "0.0.0.0")
+    API_PORT: int = int(os.getenv("API_PORT", "8000"))
+
+    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
+    SUPABASE_SERVICE_ROLE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+    SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", "")
+
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+    GROQ_API_URL: str = os.getenv("GROQ_API_URL", "https://api.groq.com/openai/v1")
+    LLM_MODEL: str = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
+    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.1"))
+    LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS", "4000"))
+
+    EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL",
+        "sentence-transformers/all-MiniLM-L6-v2")
+    EMBEDDING_DIMENSION: int = 384
+
+    MAX_FILE_SIZE_MB: int = int(os.getenv("MAX_FILE_SIZE_MB", "10"))
+    ALLOWED_CONTENT_TYPES: list = [
+        "application/pdf", "image/jpeg", "image/png",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ]
+    SIGNED_URL_EXPIRY: int = int(os.getenv("SIGNED_URL_EXPIRY", "3600"))
+\end{lstlisting}
+
+\textbf{Temperature 0.1} : Une température basse réduit la variabilité des réponses du LLM, ce qui est souhaitable pour une extraction structurée et reproductible.
+
+\section{Client Supabase : core/supabase\_client.py}
+
+\begin{lstlisting}[caption={supabase_client.py}, language=Python]
+from supabase import create_client, Client
+
+_supabase_client: Optional[Client] = None
+
+def get_supabase() -> Client:
+    global _supabase_client
+    if _supabase_client is None:
+        url = (settings.SUPABASE_URL or "").strip()
+        key = (settings.SUPABASE_SERVICE_ROLE_KEY or "").strip()
+        if not url or not key:
+            raise RuntimeError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set")
+        if key in ("your-service-role-key", "your_service_role_key"):
+            raise RuntimeError("Replace SUPABASE_SERVICE_ROLE_KEY with your real key")
+        _supabase_client = create_client(url, key)
+    return _supabase_client
+\end{lstlisting}
+
+Le client est un singleton : une seule instance partagée pour toutes les requêtes. La clé \texttt{service\_role} donne un accès complet (bypass RLS).
+
+\section{Service OCR : ocr\_service.py}
+
+\subsection{Architecture du service}
+
+\begin{lstlisting}[caption={ocr_service.py — structure}, language=Python]
+DOCLING_AVAILABLE = False
+converter = None
+
+try:
+    from docling.document_converter import DocumentConverter
+    DOCLING_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"Docling not available, using fallback: {e}")
+
+def _get_converter():
+    global converter
+    if converter is None and DOCLING_AVAILABLE:
+        try:
+            converter = DocumentConverter()
+        except Exception as e:
+            logger.error(f"Failed to init Docling: {e}")
+    return converter
+
+async def extract_text(file_content, filename, content_type):
+    conv = _get_converter()
+    if conv:
+        return await _extract_with_docling(file_content, filename)
+    return await _extract_fallback(file_content, content_type)
+\end{lstlisting}
+
+\textbf{Lazy loading} : Le \texttt{DocumentConverter} n'est instancié qu'au premier appel, car son initialisation peut être lente (chargement de modèles).
+
+\subsection{Extraction Docling}
+
+\begin{lstlisting}[caption={Extraction avec Docling}, language=Python]
+async def _extract_with_docling(file_content, filename):
+    conv = _get_converter()
+    file_obj = io.BytesIO(file_content)
+    result = conv.convert(source=file_obj, max_num_pages=100)
+
+    raw_text = ""
+    if hasattr(result, "legacy_document") and result.legacy_document:
+        doc = result.legacy_document
+        raw_text = doc.render_as_markdown()
+        metadata = {
+            "pages": len(doc.pages),
+            "tables": len(doc.output.tables),
+            "status": str(result.status),
+        }
+    else:
+        raw_text = str(result) if result else ""
+
+    return {
+        "success": True,
+        "raw_text": raw_text,
+        "metadata": metadata,
+        "confidence": 0.95,
+        "method": "docling",
+    }
+\end{lstlisting}
+
+\textbf{render\_as\_markdown} : Docling peut produire du Markdown qui préserve la structure (titres, listes). Pour le LLM, le texte brut suffit ; le Markdown peut aider à la lisibilité.
+
+\subsection{Fallback PyPDF2}
+
+\begin{lstlisting}[caption={Fallback PDF avec PyPDF2}, language=Python]
+if content_type == "application/pdf":
+    import PyPDF2
+    reader = PyPDF2.PdfReader(io.BytesIO(file_content))
+    text = "\n".join(p.extract_text() or "" for p in reader.pages)
+    return {
+        "success": True,
+        "raw_text": text,
+        "metadata": {},
+        "confidence": 0.7,
+        "method": "pypdf2_fallback",
+    }
+\end{lstlisting}
+
+PyPDF2 extrait le texte des PDF natifs (non scannés). Pour les PDF scannés, il ne retournerait rien ou du bruit. Tesseract serait alors utilisé si le fichier est traité comme image.
+
+\section{Service LLM : llm\_structuring.py}
+
+\subsection{Prompt et appel Groq}
+
+\begin{lstlisting}[caption={Appel Groq avec JSON mode}, language=Python]
+async with httpx.AsyncClient(timeout=90.0) as client:
+    response = await client.post(
+        f"{settings.GROQ_API_URL}/chat/completions",
+        headers={
+            "Authorization": f"Bearer {settings.GROQ_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "model": settings.LLM_MODEL,
+            "messages": [
+                {"role": "system", "content": "You are a CV analysis expert. Respond ONLY with valid JSON."},
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": settings.LLM_TEMPERATURE,
+            "max_tokens": settings.LLM_MAX_TOKENS,
+            "response_format": {"type": "json_object"},
+        },
+    )
+\end{lstlisting}
+
+\textbf{response\_format} : \texttt{"type": "json\_object"} force le modèle à produire du JSON valide. Sans cela, le modèle pourrait ajouter du texte explicatif.
+
+\subsection{Structure du prompt}
+
+Le prompt demande d'extraire :
+\begin{enumerate}[leftmargin=*]
+  \item \texttt{candidate\_info} : full\_name, email, phone, location, linkedin\_url, summary
+  \item \texttt{sections} : Chaque section avec \texttt{section\_type}, \texttt{section\_title}, \texttt{content}, \texttt{order}, \texttt{confidence}. Types : experience, formation, compétences, projets, langues, certifications, etc.
+  \item \texttt{career\_summary} : years\_of\_experience, seniority\_level, primary\_expertise
+\end{enumerate}
+
+Règles importantes : ne pas inventer d'information, s'adapter à la structure réelle du CV, ne pas créer de sections vides.
+
+\subsection{Structure complète du prompt}
+
+Le prompt envoyé au LLM (\texttt{\_build\_prompt}) contient :
+\begin{enumerate}[leftmargin=*]
+  \item Un rappel du rôle (« CV analysis expert »).
+  \item Les règles : ne pas inventer, s'adapter à la structure réelle, garder toutes les informations, ne pas créer de sections vides.
+  \item Le texte du CV (tronqué à 8000 caractères pour respecter la limite de contexte du modèle).
+  \item Un exemple de format JSON attendu (candidate\_info, sections avec experiences, career\_summary).
+  \item L'instruction « Respond ONLY with valid JSON, no markdown, no extra text ».
+\end{enumerate}
+
+La fonction \texttt{\_extract\_json()} gère les réponses où le modèle entoure le JSON de blocs \texttt{\`\`\`json} : elle extrait le contenu entre les délimiteurs avant de parser.
+
+\subsection{Fallback si LLM indisponible}
+
+Si \texttt{GROQ\_API\_KEY} est vide ou si l'appel échoue, \texttt{\_fallback\_parsing()} retourne une structure vide. Le pipeline continue ; le CV sera stocké avec \texttt{structured\_data} minimal.
+
+\section{Service Embedding : embedding\_service.py}
+
+\begin{lstlisting}[caption={embedding_service.py}, language=Python]
+_model = None
+
+def _get_model():
+    global _model
+    if _model is None:
+        from sentence_transformers import SentenceTransformer
+        _model = SentenceTransformer(settings.EMBEDDING_MODEL)
+    return _model
+
+async def generate_embedding(text: str) -> List[float]:
+    model = _get_model()
+    if not model or not text:
+        return [0.0] * settings.EMBEDDING_DIMENSION
+    embedding = model.encode(text, convert_to_numpy=True)
+    return embedding.tolist()
+\end{lstlisting}
+
+\textbf{encode} : La méthode \texttt{encode} du SentenceTransformer tokenise le texte, le passe au modèle et retourne un vecteur. Pour un CV de 2000 mots, l'encodage prend environ 0.3–0.5 s sur CPU.
+
+\section{Service Storage : storage\_service.py}
+
+\begin{lstlisting}[caption={Upload et signed URL}, language=Python]
+async def upload_file(file_content, filename, user_id, cv_id) -> str:
+    path = f"{user_id}/{cv_id}/{filename}"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
+        tmp.write(file_content)
+        tmp_path = tmp.name
+    try:
+        supabase.storage.from_(BUCKET).upload(
+            path=path,
+            file=tmp_path,
+            file_options={"content-type": _get_content_type(filename)},
+        )
+    finally:
+        os.unlink(tmp_path)
+    return path
+
+def create_signed_url(file_path, expires_in=3600) -> Optional[str]:
+    result = supabase.storage.from_(BUCKET).create_signed_url(
+        path=file_path,
+        expires_in=expires_in,
+    )
+    return result.data.get("signedUrl") or result.data.get("signed_url")
+\end{lstlisting}
+
+\textbf{Temp file} : L'API Supabase Storage attend un chemin de fichier, pas un objet BytesIO. Un fichier temporaire est donc créé, uploadé, puis supprimé.
+
+\section{Router CV : routers/cv.py}
+
+\subsection{Ingest — pipeline complet et fonctions auxiliaires}
+
+La fonction \texttt{ingest\_cv} orchestre les étapes 1 à 7 décrites au chapitre 3. Elle utilise \texttt{\_get\_user\_id()} qui retourne un UUID fixe en démo ; en production, ce serait extrait du JWT.
+
+\begin{lstlisting}[caption={_build_structured_data — transformation du resultat LLM}, language=Python]
+def _build_structured_data(llm_result: dict) -> dict:
+    data = llm_result.get("data", {}) or {}
+    candidate_info = data.get("candidate_info", {}) or {}
+    sections = data.get("sections", []) or []
+    career = data.get("career_summary", {}) or {}
+    experiences, education, skills = [], [], []
+
+    for s in sections:
+        if s.get("section_type") == "experience":
+            experiences.extend(s.get("content", {}).get("experiences", []))
+        elif s.get("section_type") in ("formation", "education"):
+            education.extend(s.get("content", {}).get("education", []))
+        elif s.get("section_type") in ("compétences", "skills"):
+            skills.extend(s.get("content", {}).get("skills", []))
+
+    return {
+        "candidate_info": candidate_info,
+        "sections": sections,
+        "experiences": experiences,
+        "education": education,
+        "skills": skills,
+        "career_summary": career,
+    }
+\end{lstlisting}
+
+\textbf{Objectif} : Aplatir les sections imbriquées en listes \texttt{experiences}, \texttt{education}, \texttt{skills} pour faciliter les requêtes et l'affichage. Le frontend et le scoring utilisent ces listes plates.
+
+\begin{lstlisting}[caption={_calculate_quality_score — heuristique de qualite}, language=Python]
+def _calculate_quality_score(structured: dict) -> float:
+    score = 0.0
+    ci = structured.get("candidate_info", {}) or {}
+    if ci.get("full_name"): score += 0.3
+    if ci.get("email"): score += 0.2
+    if structured.get("experiences"): score += 0.3
+    if structured.get("skills"): score += 0.2
+    return min(score, 1.0)
+\end{lstlisting}
+
+Un CV avec nom, email, au moins une expérience et des compétences obtient 1.0. Un CV minimal (nom seul) obtient 0.3.
+
+\subsection{Search — liste et recherche sémantique}
+
+\begin{lstlisting}[caption={Recherche sémantique dans cv.py}, language=Python]
+if q and q.strip():
+    query_embedding = await generate_embedding(q.strip())
+    r = supabase.rpc(
+        "match_cv_documents",
+        {
+            "query_embedding": query_embedding,
+            "match_threshold": 0.5,
+            "match_count": limit,
+        },
+    ).execute()
+    ids = [x["id"] for x in r.data]
+    r2 = supabase.table("cv_documents").select("*").in_("id", ids).eq("user_id", user_id).execute()
+    return {"results": r2.data, "total": len(r2.data), ...}
+\end{lstlisting}
+
+La recherche sémantique appelle la RPC \texttt{match\_cv\_documents}, récupère les IDs triés par similarité, puis charge les lignes complètes. Le filtre \texttt{user\_id} est appliqué côté client car la RPC ne connaît pas le contexte utilisateur (le backend utilise service\_role).
+
+\subsection{Get CV — détail avec signed URL}
+
+\begin{lstlisting}[caption={Récupération d'un CV avec signed URL}, language=Python]
+@router.get("/{cv_id}")
+async def get_cv(cv_id: str):
+    row = supabase.table("cv_documents").select("*").eq("id", cv_id).execute().data[0]
+    signed_url = None
+    if row.get("original_file_path"):
+        signed_url = create_signed_url(row["original_file_path"], expires_in=settings.SIGNED_URL_EXPIRY)
+    return {
+        "id": row["id"],
+        "raw_text": row.get("raw_text", ""),
+        "structured_data": row.get("structured_data", {}),
+        "signed_url": signed_url,
+        "embedding_preview": {"dimension": len(row["embedding"]), "first_5": row["embedding"][:5]},
+        ...
+    }
+\end{lstlisting}
+
+\subsection{Get original file — streaming}
+
+L'endpoint \texttt{GET /api/cv/\{id\}/original} télécharge le fichier depuis Storage et le renvoie en stream. Cela évite les problèmes de CORS ou d'expiration des signed URLs pour l'affichage dans un iframe.
+
+\section{Router Matching : routers/matching.py}
+
+\begin{lstlisting}[caption={Matching sémantique}, language=Python]
+@router.post("/semantic")
+async def semantic_matching(
+    job_description: str,
+    required_skills: Optional[List[str]] = None,
+    top_n: int = 10,
+):
+    query_text = job_description
+    if required_skills:
+        query_text += " " + " ".join(required_skills or [])
+
+    query_embedding = await generate_embedding(query_text)
+    r = supabase.rpc("match_cv_documents", {
+        "query_embedding": query_embedding,
+        "match_threshold": 0.3,
+        "match_count": top_n,
+    }).execute()
+
+    ids = [row["id"] for row in r.data]
+    rows = supabase.table("cv_documents").select("*").in_("id", ids).execute()
+    id_to_sim = {str(row["id"]): row["similarity"] for row in r.data}
+    cv_list = rows.data or []
+    cv_list.sort(key=lambda x: id_to_sim.get(str(x["id"]), 0), reverse=True)
+
+    results = [{"cv": cv, "similarity_score": id_to_sim.get(str(cv["id"]), 0)} for cv in cv_list]
+    return {"query": job_description, "results": results, "total": len(results)}
+\end{lstlisting}
+
+\textbf{Concaténation} : La description et les compétences requises sont concaténées pour former le texte de requête. Ainsi, une offre « Senior Python + React » et \texttt{required\_skills: ["PostgreSQL"]} produira un embedding riche.
+
+\textbf{Préservation de l'ordre} : La RPC retourne les IDs triés par similarité, mais \texttt{supabase.table().in\_("id", ids)} ne garantit pas l'ordre. Un tri explicite avec \texttt{id\_to\_sim} restaure l'ordre.
+
+\section{Router Scoring : routers/scoring.py}
+
+\begin{lstlisting}[caption={Scoring multi-critères}, language=Python]
+weights = criteria or {
+    "skills": 0.4,
+    "experience": 0.3,
+    "education": 0.2,
+    "quality": 0.1,
+}
+
+for cv in cvs:
+    structured = cv.get("structured_data", {}) or {}
+    skills_score = min(len(structured.get("skills", [])) / 10.0, 1.0) * weights["skills"]
+    exp_score = min(len(structured.get("experiences", [])) / 5.0, 1.0) * weights["experience"]
+    edu_score = min(len(structured.get("education", [])) / 3.0, 1.0) * weights["education"]
+    quality_score = (cv.get("quality_score") or 0) * weights["quality"]
+
+    total = skills_score + exp_score + edu_score + quality_score
+    results.append({"cv_id": str(cv["id"]), "cv": cv, "score": round(min(total, 1.0), 2), "breakdown": {...}})
+\end{lstlisting}
+
+\textbf{Heuristiques} : Le scoring est basé sur des comptages (nombre de compétences, d'expériences, de formations). Une évolution serait de matcher les compétences avec celles de l'offre (similarité sémantique ou exacte).
+
+\section{Router Demo : routers/demo.py}
+
+Le router Demo fournit :
+\begin{itemize}[leftmargin=*]
+  \item \texttt{GET /api/demo/load?use\_pdfs=true} : Traite les 10 PDFs de \texttt{samples/resumes/} ou, si absents, 4 CVs textuels en fallback.
+  \item \texttt{GET /api/demo/job-offers} : Retourne le contenu de \texttt{samples/job\_offers.json}.
+  \item \texttt{GET /api/demo/status} : Compte les CVs avec \texttt{source\_type} dans \texttt{['demo', 'sample']}.
+\end{itemize}
+
+Chaque CV traité passe par le même pipeline que \texttt{/api/cv/ingest} (upload, OCR, LLM, embedding, insert).
+
+\section{Modèles Pydantic : models/cv\_document.py}
+
+Les modèles Pydantic définissent la structure des données pour la validation et la sérialisation. \texttt{CVDocumentFull} est un schéma flexible qui reflète la structure JSONB stockée en base.
+
+\begin{lstlisting}[caption={Modèle CVSection et CVDocumentFull (extrait)}, language=Python]
+class CVSection(BaseModel):
+    section_type: str
+    section_title: Optional[str] = None
+    content: Dict[str, Any] = Field(default_factory=dict)
+    order: int = 0
+    confidence: float = Field(default=0.0, ge=0, le=1)
+
+class CVDocumentFull(BaseModel):
+    id: Optional[str] = None
+    version: int = 1
+    source: Dict[str, Any] = Field(default_factory=lambda: {...})
+    raw_text: str = ""
+    candidate_info: Dict[str, Any] = Field(default_factory=lambda: {...})
+    sections: List[Dict[str, Any]] = Field(default_factory=list)
+    experiences: List[Dict[str, Any]] = Field(default_factory=list)
+    education: List[Dict[str, Any]] = Field(default_factory=list)
+    skills: List[Dict[str, Any]] = Field(default_factory=list)
+    quality_score: float = Field(default=0.0, ge=0, le=1)
+    embedding: Optional[List[float]] = None
+    status: str = "processing"
+    gdpr_consent: bool = False
+\end{lstlisting}
+
+\textbf{Remarque} : Les routers n'utilisent pas directement ces modèles pour la validation des requêtes ; ils travaillent avec des dictionnaires. Les modèles servent de documentation et pourraient être utilisés pour la validation des réponses API.
+
+\section{Schémas de réponse : schemas/responses.py}
+
+La fonction \texttt{cv\_document\_response()} construit une réponse standardisée pour \texttt{GET /api/cv/:id}. Elle inclut \texttt{embedding\_preview} (dimension et 5 premières valeurs) au lieu de l'embedding complet, pour éviter de surcharger la réponse (384 floats $\times$ 4 octets $\approx$ 1,5 Ko).
+
+% =============================================================================
+% CHAPITRE 6 : FRONTEND — ANALYSE DÉTAILLÉE
+% =============================================================================
+\chapter{Frontend : analyse détaillée}
+
+\section{Dépendances frontend : package.json}
+
+\begin{lstlisting}[caption={Dépendances principales du frontend}, language=JSON]
+"dependencies": {
+  "@supabase/supabase-js": "^2.39.0",
+  "@tanstack/react-query": "^5.17.0",
+  "axios": "^1.6.2",
+  "clsx": "^2.0.0",
+  "framer-motion": "^10.16.16",
+  "lucide-react": "^0.294.0",
+  "react": "^18.2.0",
+  "react-dom": "^18.2.0",
+  "react-router-dom": "^6.21.0",
+  "tailwind-merge": "^2.2.0"
+}
+\end{lstlisting}
+
+\textbf{React Query} : Gère le cache des requêtes, les mutations, le refetch et les états loading/error. Évite les appels redondants et simplifie la gestion d'état asynchrone.
+
+\textbf{Framer Motion} : Animations fluides (AnimatePresence pour les transitions, motion.div pour les états). Utilisé dans CVUploader pour les transitions idle/uploading/success.
+
+\textbf{Lucide React} : Icônes SVG légères (FileText, Upload, Search, Rocket, etc.).
+
+\textbf{clsx + tailwind-merge} : La fonction \texttt{cn()} combine les classes conditionnelles sans conflits (tailwind-merge résout les conflits entre classes Tailwind).
+
+\section{Configuration : main.tsx et App.tsx}
+
+\begin{lstlisting}[caption={main.tsx — QueryClient et rendu}, language=JavaScript]
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { refetchOnWindowFocus: false, retry: 1 },
+  },
+})
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  </React.StrictMode>
+)
+\end{lstlisting}
+
+\textbf{retry: 1} : En cas d'échec, React Query ne réessaie qu'une fois. Pour un backend local, éviter les retries excessifs réduit le bruit.
+
+\begin{lstlisting}[caption={App.tsx — Routes}, language=JavaScript]
+<BrowserRouter>
+  <Layout>
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/cvs" element={<CVList />} />
+      <Route path="/cvs/:cvId" element={<CVViewer />} />
+      <Route path="/matching" element={<Matching />} />
+      <Route path="/demo" element={<Demo />} />
+    </Routes>
+  </Layout>
+</BrowserRouter>
+\end{lstlisting}
+
+\section{Client API : lib/api.ts}
+
+\begin{lstlisting}[caption={api.ts — client Axios}, language=JavaScript]
+const API_URL = import.meta.env.VITE_API_URL || ''
+
+export const api = axios.create({
+  baseURL: API_URL || '/',
+  headers: { 'Content-Type': 'application/json' },
+})
+\end{lstlisting}
+
+En développement, \texttt{VITE\_API\_URL} peut être vide ; le proxy Vite (\texttt{/api} $\rightarrow$ \texttt{localhost:8000}) gère la redirection. En production, \texttt{VITE\_API\_URL} pointe vers l'URL du backend déployé.
+
+\section{Layout et navigation}
+
+Le composant \texttt{Layout} affiche une sidebar fixe (64 px de large) avec les liens Dashboard, CVs, Matching, Demo. La classe \texttt{cn()} (clsx + tailwind-merge) permet de combiner les classes conditionnelles pour l'état actif (\texttt{bg-primary-600}).
+
+\section{Composant CVUploader}
+
+\begin{lstlisting}[caption={CVUploader — validation et upload}, language=JavaScript]
+const allowed = [
+  'application/pdf', 'image/jpeg', 'image/png',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+]
+if (!allowed.includes(file.type)) {
+  setStatus('error')
+  setMessage(`Unsupported type: ${file.type}`)
+  return
+}
+if (file.size > 10 * 1024 * 1024) {
+  setStatus('error')
+  setMessage('File too large (max 10 MB)')
+  return
+}
+
+const formData = new FormData()
+formData.append('file', file)
+formData.append('source', 'upload')
+formData.append('gdpr_consent', 'true')
+
+const r = await api.post('/api/cv/ingest', formData, {
+  headers: { 'Content-Type': 'multipart/form-data' },
+  timeout: 120000,
+})
+\end{lstlisting}
+
+\textbf{Drag \& drop} : Les événements \texttt{onDragOver}, \texttt{onDragLeave}, \texttt{onDrop} gèrent le glisser-déposer. Framer Motion anime les transitions entre les états (idle, uploading, success, error).
+
+\section{Pages : Dashboard, CVList, CVViewer}
+
+\subsection{Dashboard}
+
+Utilise \texttt{useQuery} avec \texttt{queryKey: ['cvs-summary']} pour charger les 5 premiers CVs. Affiche des cartes cliquables (CVs, Upload, Matching, Demo) et une liste des CVs récents avec lien vers \texttt{/cvs/:id}.
+
+\subsection{CVList}
+
+Liste paginée (limit 50) avec \texttt{useQuery} et \texttt{queryKey: ['cvs', refreshKey]}. Le \texttt{refreshKey} est incrémenté après un upload réussi pour forcer un refetch. Chaque CV est affiché sous forme de carte avec avatar (initiale du nom), nom, fichier, statut.
+
+\subsection{CVViewer}
+
+Charge un CV par ID avec \texttt{useQuery(['cv', cvId])}. Affiche :
+\begin{itemize}[leftmargin=*]
+  \item Un iframe avec l'URL du PDF (\texttt{/api/cv/:id/original} ou signed URL)
+  \item Les infos candidat (nom, email, phone, location)
+  \item Les compétences en chips
+  \item Les expériences en timeline
+  \item Le texte brut OCR dans un \texttt{<pre>}
+  \item Le JSON structuré
+  \item Un aperçu de l'embedding (dimension, 5 premières valeurs)
+\end{itemize}
+
+\section{Page Matching}
+
+Charge les offres exemples via \texttt{GET /api/demo/job-offers}. Au clic sur une offre, le texte (titre + description + skills) est concaténé et envoyé à \texttt{POST /api/matching/semantic}. Les résultats sont affichés avec le score de similarité et un lien vers le CV.
+
+\section{Page Demo}
+
+Bouton « Load Sample Resumes » qui appelle \texttt{GET /api/demo/load?use\_pdfs=true}. Après succès, les étapes du pipeline (Storage, OCR, LLM, Embedding) sont affichées pour chaque CV traité. En cas d'erreur, le message est affiché.
+
+\section{Configuration Vite et Tailwind}
+
+\begin{lstlisting}[caption={vite.config.ts}, language=JavaScript]
+export default defineConfig({
+  plugins: [react()],
+  resolve: { alias: { '@': path.resolve(__dirname, './src') } },
+  server: {
+    port: 5173,
+    proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } },
+  },
+})
+\end{lstlisting}
+
+L'alias \texttt{@} permet d'importer \texttt{@/components/...} au lieu de \texttt{../../components/...}. Le proxy évite les problèmes de CORS en développement.
+
+\section{Typographie et thème}
+
+Le fichier \texttt{index.html} charge les polices Google Fonts : DM Sans (sans-serif) et JetBrains Mono (monospace). Le \texttt{tailwind.config.js} définit \texttt{fontFamily.sans} et \texttt{fontFamily.mono} ainsi qu'une palette \texttt{primary} (bleu).
+
+\begin{lstlisting}[caption={tailwind.config.js — theme personnalise}, language=JavaScript]
+theme: {
+  extend: {
+    fontFamily: {
+      sans: ['DM Sans', 'system-ui', 'sans-serif'],
+      mono: ['JetBrains Mono', 'monospace'],
+    },
+    colors: {
+      primary: {
+        50: '#f0f9ff', 100: '#e0f2fe', ..., 600: '#0284c7', ...
+      },
+    },
+  },
+},
+\end{lstlisting}
+
+\section{Client Supabase frontend : lib/supabase.ts}
+
+\begin{lstlisting}[caption={supabase.ts — client anon}, language=JavaScript]
+const url = import.meta.env.VITE_SUPABASE_URL || ''
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+
+export const supabase = url && anonKey ? createClient(url, anonKey) : null
+\end{lstlisting}
+
+La clé \texttt{anon} est publique et sûre pour le frontend : elle respecte le RLS. Si l'utilisateur est authentifié (JWT dans le storage), les requêtes Supabase incluront automatiquement le token. Actuellement, le frontend utilise principalement l'API backend (axios) ; le client Supabase est prêt pour une future intégration (auth, requêtes directes si besoin).
+
+\section{Styles globaux : globals.css}
+
+\begin{lstlisting}[caption={globals.css}, language=CSS]
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased;
+  }
+}
+\end{lstlisting}
+
+Le dark mode est activé via la classe \texttt{dark} sur l'élément racine. Les couleurs \texttt{slate-50} (fond clair) et \texttt{slate-950} (fond sombre) assurent un contraste confortable.
+
+% =============================================================================
+% CHAPITRE 7 : SÉCURITÉ ET RGPD
+% =============================================================================
+\chapter{Sécurité et conformité RGPD}
+
+\section{Row Level Security (RLS)}
+
+Le RLS garantit que chaque utilisateur n'accède qu'à ses propres données. Même si une requête malveillante tentait d'accéder à des CVs d'autres utilisateurs via l'API Supabase directe (avec la clé anon), le RLS filtrerait les résultats. Le backend utilise \texttt{service\_role} et doit donc appliquer lui-même le filtrage par \texttt{user\_id} extrait du JWT — ce qui est fait dans les routers (ex. \texttt{eq("user\_id", user\_id)}).
+
+\section{Stockage des fichiers : sécurité}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Bucket privé} : Aucune URL publique. Les fichiers ne sont accessibles que via signed URL ou via l'endpoint backend \texttt{/api/cv/:id/original}.
+  \item \textbf{Signed URLs} : Expiration configurable (1 h par défaut). Une URL compromise ne reste valide que temporairement.
+  \item \textbf{Chemin par utilisateur} : La structure \texttt{\{user\_id\}/\{cv\_id\}/} assure l'isolation. Les politiques Storage vérifient que le premier segment du chemin correspond à \texttt{auth.uid()}.
+\end{itemize}
+
+\section{Données personnelles et RGPD}
+
+\subsection{Données collectées}
+
+\begin{itemize}[leftmargin=*]
+  \item \texttt{raw\_text} : Contient le texte intégral du CV — nom, prénom, adresse, email, téléphone, parcours professionnel.
+  \item \texttt{structured\_data} : Même contenu structuré.
+  \item \texttt{original\_file\_path} : Référence au fichier PDF/DOCX stocké.
+\end{itemize}
+
+\subsection{Mesures existantes}
+
+\begin{itemize}[leftmargin=*]
+  \item \texttt{gdpr\_consent} : Champ booléen stocké par CV. En production, il faudrait un formulaire de consentement explicite avant l'upload.
+  \item \textbf{RLS} : Isolation des données par utilisateur.
+  \item \textbf{Suppression} : L'endpoint \texttt{DELETE /api/cv/:id} supprime la ligne en base et le fichier dans Storage.
+\end{itemize}
+
+\subsection{Recommandations pour la production}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Chiffrement au repos} : Supabase chiffre les données par défaut. Vérifier la conformité avec les exigences métier.
+  \item \textbf{Politique de rétention} : Définir une durée de conservation des CV (ex. 2 ans après le dernier contact) et automatiser la suppression ou l'anonymisation.
+  \item \textbf{Droit à l'effacement} : Permettre aux candidats de demander la suppression de leurs données. L'endpoint DELETE existe ; il faut un processus pour identifier les CVs d'un candidat (par email, par exemple).
+  \item \textbf{Audit trail} : Logger les accès et modifications (qui a consulté quel CV, quand). Une table \texttt{audit\_log} ou l'utilisation des triggers Postgres peut aider.
+  \item \textbf{Anonymisation} : Pour les analyses statistiques, envisager des données anonymisées (sans noms, emails).
+\end{enumerate}
+
+\section{Authentification en production}
+
+Actuellement, \texttt{\_get\_user\_id()} retourne un UUID fixe. En production :
+
+\begin{enumerate}[leftmargin=*]
+  \item Le frontend authentifie l'utilisateur via Supabase Auth (email/mot de passe ou magic link).
+  \item Le JWT est envoyé dans l'en-tête \texttt{Authorization: Bearer <token>}.
+  \item Le backend décode le JWT (ou appelle l'API Supabase pour le valider) et extrait \texttt{user\_id}.
+  \item Toutes les requêtes (ingest, search, get, delete) filtrent par \texttt{user\_id}.
+\end{enumerate}
+
+% =============================================================================
+% CHAPITRE 8 : DONNÉES D'EXEMPLE ET DÉPLOIEMENT
+% =============================================================================
+\chapter{Données d'exemple et déploiement}
+
+\section{Génération des CVs PDF}
+
+Le script \texttt{scripts/generate\_resume\_pdfs.py} utilise ReportLab pour générer 10 PDFs à partir de \texttt{samples/resume\_contents.py}. Chaque entrée de \texttt{SAMPLE\_RESUMES} contient un \texttt{filename} et un \texttt{content} (texte brut). Le script crée un \texttt{SimpleDocTemplate} avec des marges de 0.75 inch et convertit chaque ligne en \texttt{Paragraph} (première ligne en titre, reste en corps).
+
+\subsection{Profils des 10 CVs}
+
+\begin{table}[H]
+  \centering
+  \caption{Les 10 CVs d'exemple}
+  \small
+  \begin{tabular}{@{}llp{5cm}@{}}
+    \toprule
+    \textbf{Fichier} & \textbf{Profil} & \textbf{Compétences clés} \\
+    \midrule
+    01\_john\_doe\_senior\_dev.pdf & Senior Full Stack & Python, React, FastAPI, Docker \\
+    02\_marie\_dupont\_java.pdf & Ingénieure Java & Java, Spring, PHP \\
+    03\_sarah\_chen\_data\_scientist.pdf & Data Scientist & Python, TensorFlow, NLP \\
+    04\_michael\_johnson\_devops.pdf & DevOps & AWS, Kubernetes, Terraform \\
+    05\_emma\_wilson\_frontend.pdf & Frontend & React, TypeScript, Figma \\
+    06\_david\_park\_backend.pdf & Backend & Python, Go, PostgreSQL \\
+    07\_lisa\_martinez\_ux.pdf & UX Designer & Figma, user research \\
+    08\_james\_wright\_security.pdf & Security & Penetration testing, OWASP \\
+    09\_olivia\_brown\_junior.pdf & Junior Dev & JavaScript, React, Git \\
+    10\_ahmed\_hassan\_fullstack.pdf & Full Stack & Django, React, AWS \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Offres d'emploi exemples}
+
+Le fichier \texttt{samples/job\_offers.json} contient 8 offres au format JSON : \texttt{id}, \texttt{title}, \texttt{description}, \texttt{required\_skills}, \texttt{location}, \texttt{department}. Les offres couvrent Senior Full Stack, Data Scientist, DevOps, Frontend, Backend, UX, Security, Junior.
+
+\section{Installation et variables d'environnement}
+
+\subsection{Backend}
+
+\begin{lstlisting}[caption={backend/.env}, language=bash]
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+SUPABASE_ANON_KEY=eyJ...
+GROQ_API_KEY=gsk_...
+\end{lstlisting}
+
+\subsection{Frontend}
+
+\begin{lstlisting}[caption={frontend/.env}, language=bash]
+VITE_API_URL=http://localhost:8000
+VITE_SUPABASE_URL=https://xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ...
+\end{lstlisting}
+
+\section{Déploiement}
+
+\subsection{Backend (Railway, Render, Fly.io)}
+
+\begin{lstlisting}[language=bash]
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+\end{lstlisting}
+
+\texttt{--host 0.0.0.0} permet d'écouter sur toutes les interfaces. Les variables d'environnement doivent être configurées dans le tableau de bord du fournisseur.
+
+\subsection{Frontend (Vercel, Netlify)}
+
+\begin{lstlisting}[language=bash]
+npm run build
+\end{lstlisting}
+
+Les variables \texttt{VITE\_API\_URL}, \texttt{VITE\_SUPABASE\_URL}, \texttt{VITE\_SUPABASE\_ANON\_KEY} doivent être définies au moment du build (elles sont injectées au compile-time par Vite).
+
+\subsection{Architecture de déploiement}
+
+\begin{lstlisting}[caption={Schéma de déploiement}, language=text]
+[Utilisateur] --> [Frontend Vercel]
+                       |
+                       v
+              [Backend Railway/Render]
+                       |
+         +-------------+-------------+
+         v             v             v
+    [Supabase]   [Groq API]   [sentence-transformers
+     Postgres     (LLM)        (local, pas d'API)]
+     Storage
+\end{lstlisting}
+
+% =============================================================================
+% CHAPITRE 9 : LIMITES, ÉVOLUTIONS ET CONCLUSION
+% =============================================================================
+\chapter{Limites, évolutions et conclusion}
+
+\section{Analyse des performances}
+
+\subsection{Temps de réponse par endpoint}
+
+\begin{table}[H]
+  \centering
+  \caption{Ordre de grandeur des temps de réponse (estimés)}
+  \small
+  \begin{tabular}{@{}lp{3cm}p{4cm}@{}}
+    \toprule
+    \textbf{Endpoint} & \textbf{Temps typique} & \textbf{Facteur limitant} \\
+    \midrule
+    POST /api/cv/ingest & 6--15 s & OCR + LLM + Embedding \\
+    GET /api/cv/search (sans q) & 50--200 ms & Requête Postgres + pagination \\
+    GET /api/cv/search (avec q) & 1--2 s & Embedding + RPC pgvector \\
+    GET /api/cv/:id & 100--300 ms & 1 requête DB + signed URL \\
+    POST /api/matching/semantic & 1--2 s & Embedding + RPC pgvector \\
+    POST /api/scoring/candidates & 100--500 ms & Requêtes DB + calcul Python \\
+    GET /api/demo/load & 60--120 s & 10 $\times$ pipeline ingest \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Scaling et goulots d'étranglement}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{LLM (Groq)} : Latence externe, quota API. Pour des volumes élevés, un batch ou une file asynchrone est nécessaire.
+  \item \textbf{Embedding} : Exécution CPU (sentence-transformers). Sur un serveur 4 cœurs, $\sim$2--3 CV/s. Un GPU accélérerait significativement.
+  \item \textbf{pgvector} : L'index IVFFlat avec \texttt{lists=10} est adapté à $<$10k vecteurs. Au-delà, augmenter \texttt{lists} ou envisager HNSW.
+  \item \textbf{Storage} : Supabase Storage gère bien les requêtes concurrentes ; le goulot est plutôt le réseau (upload/download).
+\end{itemize}
+
+\section{Limites actuelles}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Pipeline synchrone} : L'ingestion bloque jusqu'à la fin. Pour des volumes importants, une file asynchrone (Celery, BullMQ) serait préférable.
+  \item \textbf{User ID fixe} : La démo n'utilise pas d'authentification réelle.
+  \item \textbf{Scoring basique} : Le scoring ne matche pas les compétences avec l'offre ; il compte simplement le nombre d'éléments.
+  \item \textbf{Pas de déduplication} : Un même candidat peut uploader plusieurs CVs sans détection de doublon.
+  \item \textbf{OCR limité} : Les PDFs scannés de mauvaise qualité peuvent donner un \texttt{raw\_text} incomplet ou erroné.
+\end{itemize}
+
+\section{Évolutions possibles}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Queue asynchrone} : Découpler l'upload du traitement. Retourner immédiatement un \texttt{job\_id} et notifier le frontend (WebSocket ou polling) quand le traitement est terminé.
+  \item \textbf{Matching skills/offre} : Comparer les compétences du CV avec celles de l'offre (embedding ou matching exact) pour affiner le scoring.
+  \item \textbf{Déduplication} : Utiliser un hash du contenu ou un matching fuzzy sur email/nom pour détecter les doublons.
+  \item \textbf{Multi-utilisateur} : Intégrer Supabase Auth, extraire \texttt{user\_id} du JWT, filtrer toutes les requêtes.
+  \item \textbf{Export} : Exporter les résultats de matching en CSV ou PDF pour les recruteurs.
+\end{enumerate}
+
+\section{Roadmap technique recommandée}
+
+\begin{table}[H]
+  \centering
+  \caption{Roadmap d'évolution du projet}
+  \small
+  \begin{tabular}{@{}llp{5cm}@{}}
+    \toprule
+    \textbf{Phase} & \textbf{Priorité} & \textbf{Actions} \\
+    \midrule
+    Court terme & Haute & Intégration Supabase Auth, extraction user\_id du JWT \\
+    Court terme & Haute & Tests unitaires (pytest) sur les services OCR, LLM, embedding \\
+    Moyen terme & Moyenne & File asynchrone (Celery + Redis ou BullMQ) pour l'ingestion \\
+    Moyen terme & Moyenne & Matching skills/offre dans le scoring \\
+    Long terme & Basse & Déduplication des candidats (hash, fuzzy matching) \\
+    Long terme & Basse & Dashboard analytics (stats, graphiques) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Conclusion}
+
+L'ATS Intelligent System démontre qu'un pipeline complet d'ingestion, de structuration et de recherche sémantique de CV peut être réalisé avec une stack simplifiée : FastAPI, React, Supabase (Postgres + pgvector + Storage). Les choix techniques (Docling, Groq, sentence-transformers, pgvector) sont justifiés par la simplicité, le coût et l'intégration. Le projet constitue une base solide pour un POC ou un MVP, avec des pistes claires d'évolution vers une solution de production.
+
+\end{document}
